@@ -1,0 +1,21 @@
+from setuptools import setup, find_packages
+
+setup(
+    name="ai-stock-agent",
+    version="0.1.0",
+    description="AI-driven stock trading signal agent with technical analysis",
+    author="Claude",
+    packages=find_packages(),
+    install_requires=[
+        "akshare>=1.11.0",
+        "pandas>=2.0.0",
+        "numpy>=1.24.0",
+        "anthropic>=0.18.0",
+        "python-dotenv>=1.0.0",
+        "loguru>=0.7.0",
+        "ta>=0.11.0",
+        "matplotlib>=3.7.0",
+        "mplfinance>=0.12.0",
+    ],
+    python_requires=">=3.8",
+)
