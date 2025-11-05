@@ -14,6 +14,7 @@ import os
 import sys
 import json
 import re
+import yaml
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional
 from pathlib import Path
@@ -102,7 +103,7 @@ class YouTubeVideo:
 class IntelligenceCollector:
     """Main collector class"""
 
-    def __init__(self, days_back: int = 7, max_videos: int = 20):
+    def __init__(self, days_back: int = 7, max_videos: int = 20, config_path: str = 'config.yml'):
         self.days_back = days_back
         self.max_videos = max_videos
 
@@ -111,24 +112,79 @@ class IntelligenceCollector:
         self.twitter_client = tweepy.Client(bearer_token=TWITTER_BEARER_TOKEN) if TWITTER_BEARER_TOKEN else None
         self.claude_client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY) if ANTHROPIC_API_KEY else None
 
-        # Configuration (you can load from a config file)
-        self.youtube_channels = [
-            'UCbfYPyITQ-7l4upoX8nvctg',  # Two Minute Papers
-            'UCUHW94eEFW7hkUMVaZz4eDg',  # Yannic Kilcher
-        ]
+        # Load configuration from file or use defaults
+        self.load_config(config_path)
 
-        self.youtube_search_terms = [
-            'GPT-5',
-            'Claude 3.5',
-            'OpenAI news',
-            'AI breakthrough',
-        ]
+    def load_config(self, config_path: str):
+        """Load configuration from YAML file or use defaults"""
+        config_file = Path(config_path)
 
-        self.twitter_accounts = [
-            'AnthropicAI',
-            'OpenAI',
-            'karpathy',
-        ]
+        # Default configuration
+        default_config = {
+            'youtube': {
+                'channels': [
+                    '@TwoMinutePapers',
+                    '@YannicKilcher',
+                    '@AIExplained-Official',
+                    '@sequoiacapital',
+                    '@a16z',
+                ],
+                'search_terms': [
+                    'GPT-5',
+                    'Claude 3.5',
+                    'OpenAI news',
+                    'AI breakthrough',
+                    'Sequoia AI',
+                    'a16z AI',
+                ],
+            },
+            'twitter': {
+                'accounts': [
+                    'AnthropicAI',
+                    'OpenAI',
+                    'karpathy',
+                    'sequoia',
+                    'a16z',
+                    'pmarca',
+                ],
+            },
+        }
+
+        # Try to load from file
+        if config_file.exists():
+            try:
+                with open(config_file, 'r') as f:
+                    config = yaml.safe_load(f)
+                    rprint(f"[green]✓[/green] Loaded config from {config_path}")
+            except Exception as e:
+                rprint(f"[yellow]⚠ Could not load config file: {e}[/yellow]")
+                rprint(f"[yellow]  Using default configuration[/yellow]")
+                config = default_config
+        else:
+            rprint(f"[yellow]⚠ Config file not found: {config_path}[/yellow]")
+            rprint(f"[yellow]  Using default configuration[/yellow]")
+            config = default_config
+
+        # Extract configuration
+        youtube_config = config.get('youtube', {})
+        twitter_config = config.get('twitter', {})
+
+        self.youtube_channel_handles = youtube_config.get('channels', [])
+        self.youtube_search_terms = youtube_config.get('search_terms', [])
+        self.twitter_accounts = twitter_config.get('accounts', [])
+
+        # Convert handles to channel IDs (or keep as handles for search)
+        self.youtube_channels = []
+        for handle in self.youtube_channel_handles:
+            # If it starts with @, it's a handle - we'll search by channel name
+            # If it starts with UC, it's already a channel ID
+            if handle.startswith('UC'):
+                self.youtube_channels.append(handle)
+            else:
+                # For handles, we'll search by name instead
+                # Remove @ if present
+                clean_handle = handle.lstrip('@')
+                self.youtube_search_terms.append(clean_handle)
 
     def extract_video_id(self, url: str) -> Optional[str]:
         """Extract video ID from various YouTube URL formats"""

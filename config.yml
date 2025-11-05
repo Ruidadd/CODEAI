@@ -1,0 +1,91 @@
+# CODEAI Intelligence Configuration
+# Customize your AI intelligence sources here
+
+# YouTube Configuration
+youtube:
+  # Monitor specific channels (use channel handles @username or channel IDs)
+  channels:
+    # AI Research & Education
+    - "@TwoMinutePapers"          # Two Minute Papers
+    - "@YannicKilcher"            # Yannic Kilcher
+    - "@AIExplained-Official"      # AI Explained
+
+    # Venture Capital & Business
+    - "@sequoiacapital"            # Sequoia Capital
+    - "@a16z"                      # Andreessen Horowitz (a16z)
+
+    # Companies
+    - "@OpenAI"                    # OpenAI
+    - "@GoogleDeepMind"            # Google DeepMind
+    - "@Anthropic-AI"              # Anthropic
+
+    # Add your favorites here:
+    # - "@YourChannel"
+
+  # Search terms (finds latest videos on these topics)
+  search_terms:
+    - "GPT-5"
+    - "Claude 3.5"
+    - "o3 OpenAI"
+    - "Gemini 2.0"
+    - "AI breakthrough 2025"
+    - "LLM research"
+    - "AI agents"
+    - "Sequoia AI"
+    - "a16z AI"
+
+    # Add your topics:
+    # - "Your topic"
+
+# Twitter/X Configuration
+twitter:
+  # Monitor specific accounts (without @)
+  accounts:
+    # Companies
+    - "AnthropicAI"
+    - "OpenAI"
+    - "GoogleDeepMind"
+
+    # Researchers & Thought Leaders
+    - "karpathy"              # Andrej Karpathy
+    - "ylecun"                # Yann LeCun
+    - "sama"                  # Sam Altman
+    - "DrJimFan"              # Jim Fan
+    - "goodfellow_ian"        # Ian Goodfellow
+    - "tegmark"               # Max Tegmark
+
+    # Venture Capital
+    - "sequoia"               # Sequoia Capital
+    - "a16z"                  # Andreessen Horowitz
+    - "a16zcrypto"            # a16z Crypto
+    - "pmarca"                # Marc Andreessen
+    - "cdixon"                # Chris Dixon (a16z)
+
+    # Add your favorites:
+    # - "YourAccount"
+
+  # Hashtags to monitor
+  hashtags:
+    - "#AI"
+    - "#LLM"
+    - "#MachineLearning"
+    - "#AIResearch"
+    - "#GenerativeAI"
+    - "#AGI"
+
+    # Add your hashtags:
+    # - "#YourHashtag"
+
+# Collection Settings
+settings:
+  # How many days back to search
+  days_to_look_back: 7
+
+  # Maximum videos to analyze with AI (to control API costs)
+  max_videos_to_analyze: 20
+
+  # Minimum importance score to include (1-10)
+  min_importance_score: 6.0
+
+  # Maximum results per search query
+  max_results_per_query: 5
