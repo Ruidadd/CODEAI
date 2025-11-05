@@ -1,0 +1,76 @@
+# Stock Sentiment Analysis Configuration
+
+# Data Collection Settings
+data_collection:
+  # Stock symbols to track (can be modified)
+  stock_symbols:
+    - AAPL
+    - GOOGL
+    - MSFT
+    - TSLA
+    - AMZN
+
+  # News sources (RSS feeds)
+  news_sources:
+    - name: "Yahoo Finance"
+      url: "https://finance.yahoo.com/news/rssindex"
+      enabled: true
+    - name: "Google News - Business"
+      url: "https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtVnVHZ0pWVXlnQVAB"
+      enabled: true
+    - name: "Reuters Business"
+      url: "https://www.reutersagency.com/feed/?taxonomy=best-topics&post_type=best"
+      enabled: true
+
+  # Collection interval (in minutes)
+  collection_interval: 60
+
+  # Maximum articles to collect per source per run
+  max_articles_per_source: 20
+
+# Sentiment Analysis Settings
+sentiment_analysis:
+  # Sentiment analyzer to use: 'vader' or 'textblob'
+  analyzer: "vader"
+
+  # Sentiment thresholds
+  thresholds:
+    positive: 0.05
+    negative: -0.05
+
+  # Keywords weighting for stock-specific analysis
+  stock_keywords_weight: 1.5
+
+# Storage Settings
+storage:
+  # Database type: 'sqlite' or 'json'
+  type: "sqlite"
+
+  # SQLite database path
+  sqlite_path: "data/sentiment.db"
+
+  # JSON storage path (if using JSON)
+  json_path: "data/sentiment_data.json"
+
+  # Retention period in days
+  retention_days: 30
+
+# Visualization Settings
+visualization:
+  # Chart types to generate
+  chart_types:
+    - sentiment_timeline
+    - sentiment_distribution
+    - stock_comparison
+
+  # Output directory for charts
+  output_dir: "data/charts"
+
+  # Chart format: 'png', 'html', 'both'
+  format: "both"
+
+# Logging Settings
+logging:
+  level: "INFO"
+  file: "data/sentiment_analysis.log"
+  console: true

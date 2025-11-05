@@ -1,0 +1,35 @@
+# Stock Sentiment Analysis - Python Dependencies
+
+# Web scraping and data collection
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+feedparser>=6.0.10
+lxml>=4.9.0
+
+# Natural Language Processing
+nltk>=3.8.1
+textblob>=0.17.1
+vaderSentiment>=3.3.2
+
+# Data processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Data storage
+sqlalchemy>=2.0.0
+
+# Visualization
+matplotlib>=3.7.0
+plotly>=5.14.0
+seaborn>=0.12.0
+
+# Configuration
+python-dotenv>=1.0.0
+pyyaml>=6.0
+
+# API clients (optional, for news APIs)
+newsapi-python>=0.2.7
+
+# Utilities
+python-dateutil>=2.8.2
+pytz>=2023.3
