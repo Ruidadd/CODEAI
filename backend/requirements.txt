@@ -1,0 +1,9 @@
+fastapi==0.104.1
+uvicorn==0.24.0
+python-multipart==0.0.6
+sqlalchemy==2.0.23
+pymupdf==1.23.8
+anthropic==0.7.8
+python-dotenv==1.0.0
+pydantic==2.5.0
+aiofiles==23.2.1
