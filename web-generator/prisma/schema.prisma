@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Stripe
+  stripeCustomerId     String?   @unique
+  stripeSubscriptionId String?   @unique
+  stripePriceId        String?
+  stripeCurrentPeriodEnd DateTime?
+
+  // Relations
+  projects      Project[]
+  generations   Generation[]
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  htmlContent String   @default("")
+  cssContent  String   @default("")
+  jsContent   String   @default("")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  generations Generation[]
+
+  @@index([userId])
+}
+
+model Generation {
+  id          String   @id @default(cuid())
+  prompt      String
+  model       String   // gemini, claude, gpt
+  taskType    String   // ui-design, code-gen, optimization
+  input       String?  // JSON input
+  output      String?  // JSON output
+  status      String   @default("pending") // pending, processing, completed, failed
+  tokens      Int      @default(0)
+  cost        Float    @default(0)
+  createdAt   DateTime @default(now())
+
+  // Relations
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId   String?
+  project     Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([projectId])
+}
+
+model Subscription {
+  id                   String   @id @default(cuid())
+  name                 String
+  description          String?
+  price                Float
+  currency             String   @default("usd")
+  interval             String   @default("month") // month, year
+  stripePriceId        String   @unique
+  features             String   // JSON array of features
+  maxGenerationsPerDay Int      @default(10)
+  maxProjects          Int      @default(5)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
