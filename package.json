@@ -1,0 +1,21 @@
+{
+  "name": "codeai-windows-bash",
+  "version": "1.0.0",
+  "description": "Windows Git Bash support module for CODEAI",
+  "main": "src/index.js",
+  "scripts": {
+    "check": "node src/index.js --check",
+    "test": "node tests/windows-bash.test.js"
+  },
+  "keywords": [
+    "windows",
+    "git-bash",
+    "bash",
+    "shell",
+    "claude-code"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
