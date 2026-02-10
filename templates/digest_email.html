@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weekly AI Papers Digest</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f0f2f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif; color: #333; line-height: 1.6;">
+
+  <!-- Wrapper -->
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f0f2f5;">
+    <tr>
+      <td align="center" style="padding: 20px 10px;">
+        <table width="680" cellpadding="0" cellspacing="0" style="max-width: 680px; width: 100%;">
+
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; padding: 32px 28px; border-radius: 12px 12px 0 0; text-align: center;">
+              <h1 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: 0.5px;">
+                Weekly AI Papers Digest
+              </h1>
+              <p style="margin: 6px 0 0 0; font-size: 16px; opacity: 0.9; font-weight: 400;">
+                每周 AI 论文精选
+              </p>
+              <p style="margin: 14px 0 0 0; font-size: 13px; opacity: 0.75;">
+                {{ date_range }} &nbsp;|&nbsp; 共 {{ paper_count }} 篇论文
+              </p>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="background-color: #ffffff; padding: 8px 0; border-radius: 0 0 12px 12px;">
+
+              {% for paper in papers %}
+              <!-- Paper {{ loop.index }} -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="border-bottom: 1px solid #edf2f7;">
+                <tr>
+                  <td style="padding: 24px 28px;">
+
+                    <!-- Title row -->
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="width: 36px; vertical-align: top;">
+                          <span style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #667eea; color: #fff; border-radius: 50%; font-size: 14px; font-weight: 700;">
+                            {{ loop.index }}
+                          </span>
+                        </td>
+                        <td style="vertical-align: top; padding-left: 8px;">
+                          <a href="{{ paper.pdf_url }}" style="color: #1a202c; text-decoration: none; font-size: 16px; font-weight: 600; line-height: 1.4;">
+                            {{ paper.title }}
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Meta -->
+                    <p style="margin: 8px 0 0 44px; font-size: 12px; color: #8795a1;">
+                      {{ paper.authors[:3] | join(', ') }}{% if paper.authors | length > 3 %} et al.{% endif %}
+                      &nbsp;&middot;&nbsp;
+                      {{ paper.categories | join(', ') }}
+                      &nbsp;&middot;&nbsp;
+                      <span style="color: #667eea; font-weight: 600;">Score {{ paper.importance_score }}/10</span>
+                    </p>
+
+                    <!-- Summary card -->
+                    <table width="100%" cellpadding="0" cellspacing="0" style="margin: 14px 0 0 0;">
+                      <tr>
+                        <td style="background-color: #f7fafc; border-radius: 8px; padding: 16px 18px; font-size: 14px; line-height: 1.7;">
+
+                          <!-- Problem -->
+                          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 10px;">
+                            <tr>
+                              <td style="width: 4px; background-color: #e53e3e; border-radius: 2px;"></td>
+                              <td style="padding-left: 12px;">
+                                <strong style="color: #e53e3e; font-size: 13px;">问题 Problem</strong><br>
+                                <span style="color: #4a5568;">{{ paper.summary.problem }}</span>
+                              </td>
+                            </tr>
+                          </table>
+
+                          <!-- Solution -->
+                          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 10px;">
+                            <tr>
+                              <td style="width: 4px; background-color: #38a169; border-radius: 2px;"></td>
+                              <td style="padding-left: 12px;">
+                                <strong style="color: #38a169; font-size: 13px;">解决方案 Solution</strong><br>
+                                <span style="color: #4a5568;">{{ paper.summary.solution }}</span>
+                              </td>
+                            </tr>
+                          </table>
+
+                          <!-- Innovation -->
+                          <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td style="width: 4px; background-color: #3182ce; border-radius: 2px;"></td>
+                              <td style="padding-left: 12px;">
+                                <strong style="color: #3182ce; font-size: 13px;">创新之处 Innovation</strong><br>
+                                <span style="color: #4a5568;">{{ paper.summary.innovation }}</span>
+                              </td>
+                            </tr>
+                          </table>
+
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Links -->
+                    <p style="margin: 10px 0 0 44px; font-size: 12px;">
+                      <a href="{{ paper.pdf_url }}" style="color: #667eea; text-decoration: none; font-weight: 600;">[PDF]</a>
+                      &nbsp;&nbsp;
+                      <a href="{{ paper.arxiv_id }}" style="color: #667eea; text-decoration: none; font-weight: 600;">[arXiv]</a>
+                    </p>
+
+                  </td>
+                </tr>
+              </table>
+              {% endfor %}
+
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 24px 28px; text-align: center; font-size: 12px; color: #a0aec0;">
+              <p style="margin: 0;">
+                Generated by <strong>Weekly Papers Digest</strong> &nbsp;|&nbsp; Powered by arXiv API + Kimi
+              </p>
+              <p style="margin: 6px 0 0 0;">
+                本邮件由自动系统生成 &nbsp;|&nbsp; Categories: {{ categories | join(', ') }}
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
