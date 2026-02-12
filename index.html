@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Pulse - AI Leaders Feed Aggregator</title>
+    <style>
+        /* ==================== CSS Reset & Variables ==================== */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --bg-card: #1c2128;
+            --border-color: #30363d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --text-muted: #6e7681;
+            --accent-blue: #58a6ff;
+            --accent-purple: #bc8cff;
+            --accent-green: #3fb950;
+            --accent-orange: #d29922;
+            --accent-red: #f85149;
+            --openai-color: #10a37f;
+            --anthropic-color: #d4a574;
+            --deepmind-color: #4285f4;
+            --xai-color: #e44d26;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --transition: 0.2s ease;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ==================== Header ==================== */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(13, 17, 23, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 24px;
+        }
+
+        .header-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 22px;
+            font-weight: 700;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 6px 12px;
+            gap: 8px;
+            transition: border-color var(--transition);
+        }
+
+        .search-box:focus-within { border-color: var(--accent-blue); }
+
+        .search-box svg { color: var(--text-muted); flex-shrink: 0; }
+
+        .search-box input {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            width: 200px;
+        }
+
+        .search-box input::placeholder { color: var(--text-muted); }
+
+        .view-toggle {
+            display: flex;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+
+        .view-btn {
+            padding: 6px 12px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .view-btn.active {
+            background: var(--accent-blue);
+            color: #fff;
+        }
+
+        .view-btn:hover:not(.active) { color: var(--text-primary); }
+
+        /* ==================== Filters ==================== */
+        .filters-bar {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 24px;
+        }
+
+        .filters-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-right: 4px;
+        }
+
+        .filter-btn {
+            padding: 5px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--text-muted);
+            color: var(--text-primary);
+        }
+
+        .filter-btn.active {
+            border-color: transparent;
+            color: #fff;
+        }
+
+        .filter-btn[data-company="all"].active { background: var(--accent-blue); }
+        .filter-btn[data-company="openai"].active { background: var(--openai-color); }
+        .filter-btn[data-company="anthropic"].active { background: var(--anthropic-color); color: #1a1a1a; }
+        .filter-btn[data-company="deepmind"].active { background: var(--deepmind-color); }
+        .filter-btn[data-company="xai"].active { background: var(--xai-color); }
+
+        .filter-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .filter-dot.openai { background: var(--openai-color); }
+        .filter-dot.anthropic { background: var(--anthropic-color); }
+        .filter-dot.deepmind { background: var(--deepmind-color); }
+        .filter-dot.xai { background: var(--xai-color); }
+
+        .filter-count {
+            background: rgba(255,255,255,0.15);
+            padding: 0 6px;
+            border-radius: 10px;
+            font-size: 11px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        /* ==================== Main Content ==================== */
+        .main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* ==================== Cards View ==================== */
+        .people-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+        }
+
+        .person-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all var(--transition);
+            position: relative;
+        }
+
+        .person-card:hover {
+            border-color: var(--text-muted);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .person-card.expanded {
+            grid-column: 1 / -1;
+            max-width: 700px;
+        }
+
+        .card-accent {
+            height: 3px;
+            width: 100%;
+        }
+
+        .card-accent.openai { background: var(--openai-color); }
+        .card-accent.anthropic { background: var(--anthropic-color); }
+        .card-accent.deepmind { background: var(--deepmind-color); }
+        .card-accent.xai { background: var(--xai-color); }
+
+        .card-body {
+            padding: 16px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 600;
+            flex-shrink: 0;
+            color: var(--text-secondary);
+            border: 2px solid var(--border-color);
+        }
+
+        .avatar.openai { border-color: var(--openai-color); color: var(--openai-color); }
+        .avatar.anthropic { border-color: var(--anthropic-color); color: var(--anthropic-color); }
+        .avatar.deepmind { border-color: var(--deepmind-color); color: var(--deepmind-color); }
+        .avatar.xai { border-color: var(--xai-color); color: var(--xai-color); }
+
+        .card-info { flex: 1; min-width: 0; }
+
+        .card-name {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        .card-handle {
+            font-size: 13px;
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+
+        .card-handle:hover { text-decoration: underline; }
+
+        .card-role {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .card-company-badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        .card-company-badge.openai { background: rgba(16,163,127,0.15); color: var(--openai-color); }
+        .card-company-badge.anthropic { background: rgba(212,165,116,0.15); color: var(--anthropic-color); }
+        .card-company-badge.deepmind { background: rgba(66,133,244,0.15); color: var(--deepmind-color); }
+        .card-company-badge.xai { background: rgba(228,77,38,0.15); color: var(--xai-color); }
+
+        .card-bio {
+            margin-top: 10px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .tag {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: var(--bg-tertiary);
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+        }
+
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 5px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .action-btn.primary {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: #fff;
+        }
+
+        .action-btn.primary:hover {
+            background: #4a9aef;
+        }
+
+        /* ==================== Timeline Embed Area ==================== */
+        .timeline-container {
+            margin-top: 16px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 16px;
+            display: none;
+        }
+
+        .timeline-container.visible { display: block; }
+
+        .timeline-placeholder {
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
+            padding: 24px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .timeline-placeholder .spinner {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border-color);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ==================== Dashboard / Columns View ==================== */
+        .dashboard-view {
+            display: none;
+        }
+
+        .dashboard-view.active { display: block; }
+        .cards-view.active { display: block; }
+        .cards-view { display: none; }
+
+        .dashboard-columns {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            padding-bottom: 16px;
+        }
+
+        .dashboard-column {
+            min-width: 360px;
+            max-width: 400px;
+            flex-shrink: 0;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .column-header {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+        }
+
+        .column-header-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .column-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .column-name { font-size: 14px; font-weight: 600; }
+        .column-handle { font-size: 12px; color: var(--text-muted); }
+
+        .column-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: all var(--transition);
+        }
+
+        .column-close:hover { background: var(--bg-primary); color: var(--text-primary); }
+
+        .column-body {
+            height: 600px;
+            overflow: hidden;
+        }
+
+        /* ==================== Dashboard Selector ==================== */
+        .dashboard-selector {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .selector-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .person-chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px 4px 4px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            cursor: pointer;
+            transition: all var(--transition);
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .person-chip:hover { border-color: var(--accent-blue); color: var(--text-primary); }
+
+        .person-chip.selected {
+            border-color: var(--accent-blue);
+            background: rgba(88,166,255,0.1);
+            color: var(--accent-blue);
+        }
+
+        .chip-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* ==================== Stats Bar ==================== */
+        .stats-bar {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 16px 20px;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        .stat-value.blue { color: var(--accent-blue); }
+        .stat-value.green { color: var(--accent-green); }
+        .stat-value.purple { color: var(--accent-purple); }
+        .stat-value.orange { color: var(--accent-orange); }
+
+        /* ==================== Section Headers ==================== */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            margin-top: 8px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-count {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* ==================== Empty State ==================== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state svg { margin-bottom: 16px; opacity: 0.5; }
+        .empty-state p { font-size: 15px; margin-top: 8px; }
+
+        /* ==================== Modal ==================== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.visible {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 560px;
+            max-height: 85vh;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title { font-size: 18px; font-weight: 600; }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 24px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all var(--transition);
+        }
+
+        .modal-close:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+
+        .modal-body {
+            padding: 0;
+            overflow-y: auto;
+            max-height: calc(85vh - 60px);
+        }
+
+        /* ==================== Responsive ==================== */
+        @media (max-width: 768px) {
+            .header-inner { padding: 0; }
+            .search-box input { width: 120px; }
+            .main { padding: 16px; }
+            .people-grid { grid-template-columns: 1fr; }
+            .stats-bar { flex-direction: column; }
+            .stat-card { min-width: auto; }
+            .dashboard-columns { flex-direction: column; }
+            .dashboard-column { min-width: auto; max-width: none; }
+        }
+
+        @media (max-width: 480px) {
+            .search-box { display: none; }
+            .view-toggle { display: none; }
+        }
+
+        /* ==================== Scrollbar ==================== */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { background: var(--bg-tertiary); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        /* ==================== Tooltip ==================== */
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip::after {
+            content: attr(data-tip);
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 4px 10px;
+            border-radius: 4px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity var(--transition);
+            border: 1px solid var(--border-color);
+        }
+
+        .tooltip:hover::after { opacity: 1; }
+
+        /* ==================== Notice Banner ==================== */
+        .notice-banner {
+            background: linear-gradient(135deg, rgba(88,166,255,0.08), rgba(188,140,255,0.08));
+            border: 1px solid rgba(88,166,255,0.2);
+            border-radius: var(--radius-md);
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .notice-banner svg { flex-shrink: 0; color: var(--accent-blue); margin-top: 2px; }
+
+        .notice-text { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+        .notice-text a { color: var(--accent-blue); text-decoration: none; }
+        .notice-text a:hover { text-decoration: underline; }
+        .notice-text strong { color: var(--text-primary); }
+
+        .notice-dismiss {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 0 4px;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ==================== Header ==================== -->
+<header class="header">
+    <div class="header-inner">
+        <a href="#" class="logo">
+            <div class="logo-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            </div>
+            AI Pulse
+        </a>
+
+        <div class="header-actions">
+            <div class="search-box">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="searchInput" placeholder="Search people...">
+            </div>
+
+            <div class="view-toggle">
+                <button class="view-btn active" data-view="cards" title="Cards View">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                    Cards
+                </button>
+                <button class="view-btn" data-view="dashboard" title="Dashboard View">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+                    Dashboard
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- ==================== Filters ==================== -->
+<div class="filters-bar">
+    <div class="filters-inner">
+        <span class="filter-label">Filter:</span>
+        <button class="filter-btn active" data-company="all">
+            All
+            <span class="filter-count" id="countAll">0</span>
+        </button>
+        <button class="filter-btn" data-company="openai">
+            <span class="filter-dot openai"></span>
+            OpenAI
+            <span class="filter-count" id="countOpenai">0</span>
+        </button>
+        <button class="filter-btn" data-company="anthropic">
+            <span class="filter-dot anthropic"></span>
+            Anthropic
+            <span class="filter-count" id="countAnthropic">0</span>
+        </button>
+        <button class="filter-btn" data-company="deepmind">
+            <span class="filter-dot deepmind"></span>
+            DeepMind
+            <span class="filter-count" id="countDeepmind">0</span>
+        </button>
+        <button class="filter-btn" data-company="xai">
+            <span class="filter-dot xai"></span>
+            xAI
+            <span class="filter-count" id="countXai">0</span>
+        </button>
+    </div>
+</div>
+
+<!-- ==================== Main ==================== -->
+<main class="main">
+    <!-- Notice -->
+    <div class="notice-banner" id="noticeBanner">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <div class="notice-text">
+            <strong>How it works:</strong> Click <strong>"View Timeline"</strong> on any card to load their latest X/Twitter posts inline using embedded timelines. Switch to <strong>Dashboard</strong> mode for a TweetDeck-style multi-column view. All feeds load directly from X.com &mdash; no API key required.
+        </div>
+        <button class="notice-dismiss" onclick="document.getElementById('noticeBanner').style.display='none'">&times;</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+        <div class="stat-card">
+            <div class="stat-label">People Tracked</div>
+            <div class="stat-value blue" id="statTotal">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Companies</div>
+            <div class="stat-value green">4</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Current Filter</div>
+            <div class="stat-value purple" id="statFilter" style="font-size:20px;">All</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Dashboard Columns</div>
+            <div class="stat-value orange" id="statColumns">0</div>
+        </div>
+    </div>
+
+    <!-- Cards View -->
+    <div class="cards-view active" id="cardsView">
+        <div class="section-header">
+            <span class="section-title">AI Leaders on X</span>
+            <span class="section-count" id="filteredCount"></span>
+        </div>
+        <div class="people-grid" id="peopleGrid"></div>
+    </div>
+
+    <!-- Dashboard View -->
+    <div class="dashboard-view" id="dashboardView">
+        <div class="dashboard-selector" id="dashboardSelector">
+            <span class="selector-label">Select people to add columns:</span>
+        </div>
+        <div class="dashboard-columns" id="dashboardColumns"></div>
+    </div>
+</main>
+
+<!-- ==================== Timeline Modal ==================== -->
+<div class="modal-overlay" id="timelineModal">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="modal-title" id="modalTitle"></span>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+    </div>
+</div>
+
+<!-- X/Twitter Widget Script -->
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<script>
+// ==================== People Data ====================
+const people = [
+    // ---- OpenAI ----
+    {
+        name: "Sam Altman",
+        handle: "sama",
+        company: "openai",
+        role: "CEO, OpenAI",
+        bio: "Leading OpenAI's mission to ensure AGI benefits all of humanity. Drives product strategy including ChatGPT and GPT series models.",
+        tags: ["AGI", "Strategy", "Product"],
+        initial: "SA"
+    },
+    {
+        name: "Greg Brockman",
+        handle: "gdb",
+        company: "openai",
+        role: "Co-founder & President, OpenAI",
+        bio: "Co-founded OpenAI, oversees engineering and infrastructure. Key architect behind OpenAI's technical strategy.",
+        tags: ["Engineering", "Infrastructure", "Leadership"],
+        initial: "GB"
+    },
+    {
+        name: "Andrej Karpathy",
+        handle: "karpathy",
+        company: "openai",
+        role: "Former VP of AI, OpenAI (Independent)",
+        bio: "Deep learning pioneer, built and led the AI team at Tesla, then OpenAI. Now independent educator and researcher focused on LLMs.",
+        tags: ["Deep Learning", "LLMs", "Education"],
+        initial: "AK"
+    },
+    {
+        name: "Noam Brown",
+        handle: "polynoamial",
+        company: "openai",
+        role: "Research Scientist, OpenAI",
+        bio: "Creator of Libratus/Pluribus poker AI. Now working on reasoning and planning at OpenAI, key contributor to o1/o3 reasoning models.",
+        tags: ["Reasoning", "Planning", "Game Theory"],
+        initial: "NB"
+    },
+    {
+        name: "Mark Chen",
+        handle: "markchen90",
+        company: "openai",
+        role: "SVP of Research, OpenAI",
+        bio: "Leads core research at OpenAI. Key contributor to DALL-E, Codex, and GPT-4. Drives multimodal AI research.",
+        tags: ["Research", "Multimodal", "GPT"],
+        initial: "MC"
+    },
+    {
+        name: "Hyung Won Chung",
+        handle: "hwchung27",
+        company: "openai",
+        role: "Research Scientist, OpenAI",
+        bio: "Previously at Google Brain. Works on large language model training and scaling. Key contributor to instruction tuning research.",
+        tags: ["Scaling", "Training", "LLMs"],
+        initial: "HC"
+    },
+
+    // ---- Anthropic ----
+    {
+        name: "Dario Amodei",
+        handle: "DarioAmodei",
+        company: "anthropic",
+        role: "CEO, Anthropic",
+        bio: "Co-founder and CEO of Anthropic. Former VP of Research at OpenAI. Leading the development of safe, beneficial AI systems including Claude.",
+        tags: ["AI Safety", "Leadership", "Claude"],
+        initial: "DA"
+    },
+    {
+        name: "Daniela Amodei",
+        handle: "DanielaAmodei",
+        company: "anthropic",
+        role: "President, Anthropic",
+        bio: "Co-founder and President of Anthropic. Drives business operations and strategic partnerships. Former VP at OpenAI.",
+        tags: ["Operations", "Strategy", "Leadership"],
+        initial: "DA"
+    },
+    {
+        name: "Amanda Askell",
+        handle: "AmandaAskell",
+        company: "anthropic",
+        role: "Character & RLHF Lead, Anthropic",
+        bio: "Leads Claude's character development and alignment fine-tuning. Expert in AI ethics, philosophy, and RLHF techniques.",
+        tags: ["Alignment", "RLHF", "Philosophy"],
+        initial: "AA"
+    },
+    {
+        name: "Chris Olah",
+        handle: "ch402",
+        company: "anthropic",
+        role: "Co-founder, Anthropic",
+        bio: "Pioneer of neural network interpretability. His work on understanding neural networks (Distill, Circuits) is foundational to mechanistic interpretability.",
+        tags: ["Interpretability", "Mechanistic", "Visualization"],
+        initial: "CO"
+    },
+    {
+        name: "Jan Leike",
+        handle: "janleike",
+        company: "anthropic",
+        role: "Head of Alignment, Anthropic",
+        bio: "Formerly led the Superalignment team at OpenAI. Now leads alignment research at Anthropic, focusing on scalable oversight.",
+        tags: ["Alignment", "Superalignment", "Safety"],
+        initial: "JL"
+    },
+    {
+        name: "Jack Clark",
+        handle: "jackclarkSF",
+        company: "anthropic",
+        role: "Co-founder & Head of Policy, Anthropic",
+        bio: "Co-founder of Anthropic. Publishes the Import AI newsletter. Previously Policy Director at OpenAI. AI policy thought leader.",
+        tags: ["Policy", "Import AI", "Governance"],
+        initial: "JC"
+    },
+
+    // ---- DeepMind ----
+    {
+        name: "Demis Hassabis",
+        handle: "demishassabis",
+        company: "deepmind",
+        role: "CEO, Google DeepMind",
+        bio: "Nobel Laureate. Co-founded DeepMind, now leads Google DeepMind. Architect behind AlphaGo, AlphaFold, and Gemini models.",
+        tags: ["AlphaFold", "Gemini", "Nobel Prize"],
+        initial: "DH"
+    },
+    {
+        name: "Jeff Dean",
+        handle: "JeffDean",
+        company: "deepmind",
+        role: "Chief Scientist, Google DeepMind",
+        bio: "Google Senior Fellow and Chief Scientist of Google DeepMind. Pioneer of large-scale distributed systems, MapReduce, TensorFlow, and Transformer architecture.",
+        tags: ["Systems", "Transformer", "Infrastructure"],
+        initial: "JD"
+    },
+    {
+        name: "Shane Legg",
+        handle: "ShaneLegg",
+        company: "deepmind",
+        role: "Co-founder & Chief AGI Scientist, DeepMind",
+        bio: "Co-founder of DeepMind. Pioneered the mathematical formalization of AGI. Leads long-term AGI research direction.",
+        tags: ["AGI", "Theory", "Foundations"],
+        initial: "SL"
+    },
+    {
+        name: "Oriol Vinyals",
+        handle: "OriolVinyals",
+        company: "deepmind",
+        role: "VP of Research, Google DeepMind",
+        bio: "Key contributor to seq2seq models, AlphaStar, and Gemini. Leads core research teams at Google DeepMind.",
+        tags: ["Seq2Seq", "Gemini", "Research"],
+        initial: "OV"
+    },
+    {
+        name: "David Silver",
+        handle: "dpsilver",
+        company: "deepmind",
+        role: "Principal Research Scientist, DeepMind",
+        bio: "Lead researcher behind AlphaGo, AlphaZero, and AlphaFold. Pioneer of deep reinforcement learning.",
+        tags: ["AlphaGo", "Reinforcement Learning", "Games"],
+        initial: "DS"
+    },
+
+    // ---- xAI ----
+    {
+        name: "Elon Musk",
+        handle: "elonmusk",
+        company: "xai",
+        role: "Founder & CEO, xAI",
+        bio: "Founded xAI to build AI that maximally benefits humanity. Also CEO of Tesla, SpaceX. Drives Grok model development.",
+        tags: ["Grok", "Strategy", "Leadership"],
+        initial: "EM"
+    },
+    {
+        name: "Igor Babuschkin",
+        handle: "ibabuschkin",
+        company: "xai",
+        role: "Co-founder & Engineer, xAI",
+        bio: "Former DeepMind researcher. Co-founded xAI. Key technical leader working on Grok model architecture and training.",
+        tags: ["Grok", "Training", "Architecture"],
+        initial: "IB"
+    },
+    {
+        name: "Toby Pohlen",
+        handle: "tobypohlen",
+        company: "xai",
+        role: "Co-founder & Engineer, xAI",
+        bio: "Former DeepMind researcher. Co-founded xAI. Works on core model development and distributed training infrastructure.",
+        tags: ["Infrastructure", "Training", "Distributed"],
+        initial: "TP"
+    },
+    {
+        name: "Jimmy Ba",
+        handle: "jimmylba",
+        company: "xai",
+        role: "Co-founder, xAI",
+        bio: "Professor at University of Toronto. Co-inventor of Adam optimizer and Layer Normalization. Co-founded xAI.",
+        tags: ["Optimization", "Research", "Adam"],
+        initial: "JB"
+    }
+];
+
+// ==================== State ====================
+let currentFilter = 'all';
+let currentView = 'cards';
+let dashboardPeople = new Set();
+let expandedCard = null;
+
+// ==================== Initialization ====================
+function init() {
+    updateCounts();
+    renderCards();
+    renderDashboardSelector();
+    bindEvents();
+}
+
+function updateCounts() {
+    const counts = { all: people.length, openai: 0, anthropic: 0, deepmind: 0, xai: 0 };
+    people.forEach(p => counts[p.company]++);
+    document.getElementById('countAll').textContent = counts.all;
+    document.getElementById('countOpenai').textContent = counts.openai;
+    document.getElementById('countAnthropic').textContent = counts.anthropic;
+    document.getElementById('countDeepmind').textContent = counts.deepmind;
+    document.getElementById('countXai').textContent = counts.xai;
+    document.getElementById('statTotal').textContent = counts.all;
+}
+
+// ==================== Render Cards ====================
+function renderCards() {
+    const grid = document.getElementById('peopleGrid');
+    const query = document.getElementById('searchInput').value.toLowerCase();
+
+    const filtered = people.filter(p => {
+        const matchCompany = currentFilter === 'all' || p.company === currentFilter;
+        const matchSearch = !query ||
+            p.name.toLowerCase().includes(query) ||
+            p.handle.toLowerCase().includes(query) ||
+            p.role.toLowerCase().includes(query) ||
+            p.tags.some(t => t.toLowerCase().includes(query));
+        return matchCompany && matchSearch;
+    });
+
+    document.getElementById('filteredCount').textContent = `Showing ${filtered.length} of ${people.length}`;
+
+    if (filtered.length === 0) {
+        grid.innerHTML = `
+            <div class="empty-state" style="grid-column:1/-1">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <p>No results found. Try a different filter or search term.</p>
+            </div>`;
+        return;
+    }
+
+    grid.innerHTML = filtered.map(p => `
+        <div class="person-card" data-handle="${p.handle}">
+            <div class="card-accent ${p.company}"></div>
+            <div class="card-body">
+                <div class="card-header">
+                    <div class="avatar ${p.company}">${p.initial}</div>
+                    <div class="card-info">
+                        <div class="card-name">${p.name}</div>
+                        <a class="card-handle" href="https://x.com/${p.handle}" target="_blank" rel="noopener">@${p.handle}</a>
+                        <div class="card-role">${p.role}</div>
+                    </div>
+                    <span class="card-company-badge ${p.company}">${companyLabel(p.company)}</span>
+                </div>
+                <div class="card-bio">${p.bio}</div>
+                <div class="card-tags">${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+                <div class="card-footer">
+                    <div class="card-actions">
+                        <a class="action-btn" href="https://x.com/${p.handle}" target="_blank" rel="noopener">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                            Profile
+                        </a>
+                        <button class="action-btn primary" onclick="loadTimeline('${p.handle}')">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                            View Timeline
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function companyLabel(c) {
+    return { openai: 'OpenAI', anthropic: 'Anthropic', deepmind: 'DeepMind', xai: 'xAI' }[c] || c;
+}
+
+// ==================== Timeline Modal ====================
+function loadTimeline(handle) {
+    const person = people.find(p => p.handle === handle);
+    if (!person) return;
+
+    const modal = document.getElementById('timelineModal');
+    const title = document.getElementById('modalTitle');
+    const body = document.getElementById('modalBody');
+
+    title.textContent = `${person.name} (@${person.handle})`;
+    body.innerHTML = `
+        <div style="padding:0">
+            <a class="twitter-timeline"
+               data-theme="dark"
+               data-chrome="noheader nofooter"
+               data-height="500"
+               href="https://twitter.com/${handle}">
+                Loading @${handle}...
+            </a>
+        </div>
+    `;
+
+    modal.classList.add('visible');
+
+    // Render the embed
+    if (window.twttr && window.twttr.widgets) {
+        window.twttr.widgets.load(body);
+    }
+}
+
+function closeModal() {
+    document.getElementById('timelineModal').classList.remove('visible');
+    document.getElementById('modalBody').innerHTML = '';
+}
+
+// ==================== Dashboard ====================
+function renderDashboardSelector() {
+    const container = document.getElementById('dashboardSelector');
+    const chips = people.map(p => `
+        <span class="person-chip ${dashboardPeople.has(p.handle) ? 'selected' : ''}"
+              data-handle="${p.handle}"
+              onclick="toggleDashboardPerson('${p.handle}')">
+            <span class="chip-avatar" style="color:var(--${p.company}-color)">${p.initial}</span>
+            ${p.name}
+        </span>
+    `).join('');
+    container.innerHTML = `<span class="selector-label">Select columns:</span>${chips}`;
+}
+
+function toggleDashboardPerson(handle) {
+    if (dashboardPeople.has(handle)) {
+        dashboardPeople.delete(handle);
+    } else {
+        dashboardPeople.add(handle);
+    }
+    renderDashboardSelector();
+    renderDashboardColumns();
+    document.getElementById('statColumns').textContent = dashboardPeople.size;
+}
+
+function renderDashboardColumns() {
+    const container = document.getElementById('dashboardColumns');
+
+    if (dashboardPeople.size === 0) {
+        container.innerHTML = `
+            <div class="empty-state" style="width:100%;padding:60px">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+                <p>Select people above to add timeline columns</p>
+            </div>`;
+        return;
+    }
+
+    container.innerHTML = [...dashboardPeople].map(handle => {
+        const p = people.find(pp => pp.handle === handle);
+        if (!p) return '';
+        return `
+            <div class="dashboard-column">
+                <div class="column-header">
+                    <div class="column-header-left">
+                        <div class="column-avatar" style="color:var(--${p.company}-color)">${p.initial}</div>
+                        <div>
+                            <div class="column-name">${p.name}</div>
+                            <div class="column-handle">@${p.handle}</div>
+                        </div>
+                    </div>
+                    <button class="column-close" onclick="toggleDashboardPerson('${p.handle}')">&times;</button>
+                </div>
+                <div class="column-body">
+                    <a class="twitter-timeline"
+                       data-theme="dark"
+                       data-chrome="noheader nofooter noborders"
+                       data-height="600"
+                       href="https://twitter.com/${p.handle}">
+                        Loading @${p.handle}...
+                    </a>
+                </div>
+            </div>`;
+    }).join('');
+
+    if (window.twttr && window.twttr.widgets) {
+        window.twttr.widgets.load(container);
+    }
+}
+
+// ==================== Events ====================
+function bindEvents() {
+    // Filters
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilter = btn.dataset.company;
+            document.getElementById('statFilter').textContent = companyLabel(currentFilter) || 'All';
+            renderCards();
+        });
+    });
+
+    // View toggle
+    document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentView = btn.dataset.view;
+
+            document.getElementById('cardsView').classList.toggle('active', currentView === 'cards');
+            document.getElementById('dashboardView').classList.toggle('active', currentView === 'dashboard');
+
+            if (currentView === 'dashboard') {
+                renderDashboardColumns();
+            }
+        });
+    });
+
+    // Search
+    document.getElementById('searchInput').addEventListener('input', renderCards);
+
+    // Modal close on overlay click
+    document.getElementById('timelineModal').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) closeModal();
+    });
+
+    // Escape key closes modal
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeModal();
+    });
+}
+
+// ==================== Start ====================
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>
