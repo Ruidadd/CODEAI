@@ -101,7 +101,7 @@ NAPCAT_CONF
         if command -v openclaw &>/dev/null; then
             openclaw plugins install onebot 2>/dev/null || true
             openclaw config set channels.onebot.enabled true
-            openclaw config set channels.onebot.dmPolicy open
+            openclaw config set channels.onebot.dmPolicy pairing
             openclaw config set channels.onebot.groupPolicy open
         else
             CONTAINER_NAME=$(docker ps --format '{{.Names}}' | grep "openclaw" | head -1)
@@ -150,7 +150,7 @@ NAPCAT_CONF
             openclaw config set channels.qq.appId "$QQ_APP_ID"
             openclaw config set channels.qq.appSecret "$QQ_APP_SECRET"
             openclaw config set channels.qq.enabled true
-            openclaw config set channels.qq.dmPolicy open
+            openclaw config set channels.qq.dmPolicy pairing
         else
             CONTAINER_NAME=$(docker ps --format '{{.Names}}' | grep "openclaw" | head -1)
             if [[ -n "$CONTAINER_NAME" ]]; then

@@ -18,6 +18,11 @@ ok()    { echo -e "${GREEN}[OK]${NC}    $*"; }
 warn()  { echo -e "${YELLOW}[WARN]${NC}  $*"; }
 fail()  { echo -e "${RED}[FAIL]${NC}  $*"; exit 1; }
 
+# 临时文件清理：确保异常退出时不残留敏感数据
+TEMP_FILES=()
+cleanup() { for f in "${TEMP_FILES[@]}"; do rm -f "$f"; done; }
+trap cleanup EXIT
+
 OPENCLAW_HOME="${OPENCLAW_HOME:-/opt/openclaw}"
 CONFIG_DIR="${OPENCLAW_HOME}/config"
 CONFIG_FILE="${CONFIG_DIR}/openclaw.json"
@@ -42,9 +47,12 @@ if [[ -z "$MOONSHOT_API_KEY" ]]; then
     fail "Moonshot API Key 不能为空"
 fi
 
-# 简单格式校验
+# 格式校验：前缀 + 最小长度
 if [[ ! "$MOONSHOT_API_KEY" =~ ^sk- ]]; then
     warn "API Key 格式可能不正确（通常以 sk- 开头），继续配置..."
+fi
+if [[ ${#MOONSHOT_API_KEY} -lt 20 ]]; then
+    fail "API Key 长度不足（至少 20 字符），请检查是否复制完整"
 fi
 
 # ── 测试 API 连通性 ──────────────────────────────────────────────────────────
@@ -81,47 +89,80 @@ else
     # 方式 2：直接写入 JSON 配置文件（Docker 场景）
     info "写入模型配置文件..."
 
-    # 如果已有配置文件则合并，否则从模板创建
-    if [[ -f "$CONFIG_FILE" ]]; then
-        # 使用临时文件安全写入
-        TEMP_CONFIG=$(mktemp)
-        # 尝试使用 jq 合并配置
+    # 安全写入 JSON 配置（避免 sed 注入风险）
+    # 优先级：jq > python3 > 自动安装 jq
+    _safe_json_write() {
+        local src="$1" dst="$2" api_key="$3" server_ip="$4"
+        local tmp
+        tmp=$(mktemp)
+        TEMP_FILES+=("$tmp")
+
         if command -v jq &>/dev/null; then
-            jq --arg key "$MOONSHOT_API_KEY" '
+            jq --arg key "$api_key" --arg ip "$server_ip" '
                 .agents.primaryModel = "moonshot/kimi-k2.5" |
                 .agents.imageModel = "moonshot/kimi-k2.5-vision" |
                 .modelProviders.moonshot.apiKey = $key |
                 .modelProviders.moonshot.baseUrl = "https://api.moonshot.cn/v1" |
-                .modelProviders.moonshot.enabled = true
-            ' "$CONFIG_FILE" > "$TEMP_CONFIG"
-            mv "$TEMP_CONFIG" "$CONFIG_FILE"
+                .modelProviders.moonshot.enabled = true |
+                .security.allowedOrigins = [("http://" + $ip + ":18789")]
+            ' "$src" > "$tmp"
+        elif command -v python3 &>/dev/null; then
+            python3 -c "
+import json, sys
+with open('$src') as f: cfg = json.load(f)
+cfg.setdefault('agents', {})['primaryModel'] = 'moonshot/kimi-k2.5'
+cfg['agents']['imageModel'] = 'moonshot/kimi-k2.5-vision'
+cfg.setdefault('modelProviders', {}).setdefault('moonshot', {})['apiKey'] = sys.argv[1]
+cfg['modelProviders']['moonshot']['baseUrl'] = 'https://api.moonshot.cn/v1'
+cfg['modelProviders']['moonshot']['enabled'] = True
+cfg.setdefault('security', {})['allowedOrigins'] = ['http://' + sys.argv[2] + ':18789']
+with open('$tmp', 'w') as f: json.dump(cfg, f, indent=4)
+" "$api_key" "$server_ip"
         else
-            warn "未安装 jq，将覆盖配置文件"
-            cp "${SCRIPT_DIR}/../config/openclaw-kimi.json" "$TEMP_CONFIG"
-            sed -i "s|YOUR_MOONSHOT_API_KEY|${MOONSHOT_API_KEY}|g" "$TEMP_CONFIG"
-            mv "$TEMP_CONFIG" "$CONFIG_FILE"
+            info "安装 jq 以安全写入 JSON..."
+            apt-get install -y -qq jq 2>/dev/null || yum install -y -q jq 2>/dev/null || fail "无法安装 jq，请手动安装后重试"
+            jq --arg key "$api_key" --arg ip "$server_ip" '
+                .agents.primaryModel = "moonshot/kimi-k2.5" |
+                .agents.imageModel = "moonshot/kimi-k2.5-vision" |
+                .modelProviders.moonshot.apiKey = $key |
+                .modelProviders.moonshot.baseUrl = "https://api.moonshot.cn/v1" |
+                .modelProviders.moonshot.enabled = true |
+                .security.allowedOrigins = [("http://" + $ip + ":18789")]
+            ' "$src" > "$tmp"
         fi
+        mv "$tmp" "$dst"
+    }
+
+    # 获取服务器 IP 用于 CORS 配置
+    SERVER_IP=$(curl -sf http://100.100.100.200/latest/meta-data/eipv4 2>/dev/null \
+        || curl -sf --max-time 5 ifconfig.me 2>/dev/null \
+        || hostname -I | awk '{print $1}')
+
+    if [[ -f "$CONFIG_FILE" ]]; then
+        _safe_json_write "$CONFIG_FILE" "$CONFIG_FILE" "$MOONSHOT_API_KEY" "$SERVER_IP"
     else
-        cp "${SCRIPT_DIR}/../config/openclaw-kimi.json" "$CONFIG_FILE"
-        sed -i "s|YOUR_MOONSHOT_API_KEY|${MOONSHOT_API_KEY}|g" "$CONFIG_FILE"
+        _safe_json_write "${SCRIPT_DIR}/../config/openclaw-kimi.json" "$CONFIG_FILE" "$MOONSHOT_API_KEY" "$SERVER_IP"
     fi
 
     chown 1000:1000 "$CONFIG_FILE" 2>/dev/null || true
     ok "模型配置文件已写入：${CONFIG_FILE}"
 fi
 
-# ── 保存 API Key 到环境变量文件 ──────────────────────────────────────────────
+# ── 保存 API Key 到环境变量文件（权限加固） ────────────────────────────────────
 ENV_FILE="${OPENCLAW_HOME}/.env"
 if [[ -f "$ENV_FILE" ]]; then
-    # 追加或更新 MOONSHOT_API_KEY
-    if grep -q "MOONSHOT_API_KEY" "$ENV_FILE" 2>/dev/null; then
-        sed -i "s|^MOONSHOT_API_KEY=.*|MOONSHOT_API_KEY=${MOONSHOT_API_KEY}|" "$ENV_FILE"
-    else
-        echo "MOONSHOT_API_KEY=${MOONSHOT_API_KEY}" >> "$ENV_FILE"
-    fi
+    # 安全更新：写入临时文件再原子替换，避免 sed 注入
+    ENV_TMP=$(mktemp)
+    TEMP_FILES+=("$ENV_TMP")
+    grep -v "^MOONSHOT_API_KEY=" "$ENV_FILE" > "$ENV_TMP" 2>/dev/null || true
+    echo "MOONSHOT_API_KEY=${MOONSHOT_API_KEY}" >> "$ENV_TMP"
+    mv "$ENV_TMP" "$ENV_FILE"
 else
     echo "MOONSHOT_API_KEY=${MOONSHOT_API_KEY}" > "$ENV_FILE"
 fi
+# 限制 .env 文件权限：仅 root 可读写
+chmod 600 "$ENV_FILE"
+ok ".env 文件权限已设置为 600（仅 root 可读）"
 
 ok "Kimi 2.5 模型配置完成"
 echo ""

@@ -125,24 +125,26 @@ chown -R 1000:1000 "${OPENCLAW_HOME}"/{config,workspace}
 
 # 生成 Gateway Token
 if [[ ! -f "${OPENCLAW_HOME}/.env" ]] || ! grep -q "OPENCLAW_GATEWAY_TOKEN" "${OPENCLAW_HOME}/.env" 2>/dev/null; then
-    GATEWAY_TOKEN=$(openssl rand -hex 32)
+    GATEWAY_TOKEN=$(openssl rand -hex 64)
     cat > "${OPENCLAW_HOME}/.env" <<ENV_FILE
 # OpenClaw 环境变量
 OPENCLAW_GATEWAY_TOKEN=${GATEWAY_TOKEN}
 OPENCLAW_HOME=${OPENCLAW_HOME}
 TZ=Asia/Shanghai
 ENV_FILE
-    ok "Gateway Token 已生成"
+    chmod 600 "${OPENCLAW_HOME}/.env"
+    ok "Gateway Token 已生成（256 位）"
+    warn "请定期轮换 Token：openssl rand -hex 64 并更新 .env 文件"
 else
     ok "Gateway Token 已存在"
 fi
 
 # ─── 生成 Docker Compose 文件 ─────────────────────────────────────────────
-info "生成 Docker Compose 配置..."
-cat > "${OPENCLAW_HOME}/docker-compose.yml" <<'COMPOSE'
+info "生成 Docker Compose 配置（版本: ${TAG_LABEL}）..."
+cat > "${OPENCLAW_HOME}/docker-compose.yml" <<COMPOSE
 services:
   openclaw-gateway:
-    image: openclaw:latest
+    image: openclaw:${TAG_LABEL}
     container_name: openclaw-gateway
     restart: unless-stopped
     ports:
@@ -153,13 +155,16 @@ services:
       - ./logs:/home/node/.openclaw/logs
     env_file:
       - .env
-    environment:
-      - TERM=xterm-256color
+    tmpfs:
+      - /tmp:size=256M
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
     deploy:
       resources:
         limits:
-          cpus: "1.0"
-          memory: 2048M
+          cpus: "2.0"
+          memory: 3072M
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:18789/health"]
       interval: 30s

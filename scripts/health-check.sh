@@ -121,6 +121,41 @@ else
     check_warn "可用内存较低：${MEM_AVAIL}MB"
 fi
 
+# ── 8. 安全配置 ────────────────────────────────────────────────────────────
+echo "8. 安全配置"
+
+# 检查 .env 文件权限
+if [[ -f "${OPENCLAW_HOME}/.env" ]]; then
+    ENV_PERMS=$(stat -c "%a" "${OPENCLAW_HOME}/.env" 2>/dev/null || echo "unknown")
+    if [[ "$ENV_PERMS" == "600" ]]; then
+        check_pass ".env 文件权限安全 (600)"
+    else
+        check_fail ".env 文件权限不安全 (${ENV_PERMS})，应为 600。修复: chmod 600 ${OPENCLAW_HOME}/.env"
+    fi
+else
+    check_warn ".env 文件不存在"
+fi
+
+# 检查 CORS 配置
+CONFIG_FILE="${OPENCLAW_HOME}/config/openclaw.json"
+if [[ -f "$CONFIG_FILE" ]]; then
+    if grep -q '"allowedOrigins".*"\*"' "$CONFIG_FILE" 2>/dev/null; then
+        check_fail "CORS 配置为通配符 (*)，存在安全风险。请重新运行 scripts/configure-model.sh"
+    else
+        check_pass "CORS 配置已限制来源"
+    fi
+fi
+
+# 检查 OpenClaw 版本（CVE-2026-25253）
+if command -v openclaw &>/dev/null; then
+    CURRENT_VER=$(openclaw --version 2>/dev/null || echo "0.0.0")
+    if [[ "$(printf '%s\n' "2026.1.29" "$CURRENT_VER" | sort -V | head -1)" != "2026.1.29" ]]; then
+        check_fail "版本 ${CURRENT_VER} 存在 CVE-2026-25253 漏洞，请更新到 v2026.1.29+"
+    else
+        check_pass "版本安全：${CURRENT_VER}（>= v2026.1.29）"
+    fi
+fi
+
 # ── 汇总 ────────────────────────────────────────────────────────────────────
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

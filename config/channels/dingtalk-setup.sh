@@ -73,7 +73,7 @@ if command -v openclaw &>/dev/null; then
     openclaw config set channels.dingtalk.clientId "$DINGTALK_CLIENT_ID"
     openclaw config set channels.dingtalk.clientSecret "$DINGTALK_CLIENT_SECRET"
     openclaw config set channels.dingtalk.enabled true
-    openclaw config set channels.dingtalk.dmPolicy open
+    openclaw config set channels.dingtalk.dmPolicy pairing
     openclaw config set channels.dingtalk.groupPolicy open
     openclaw config set channels.dingtalk.messageType open
 else
@@ -117,8 +117,11 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 echo "  配置说明："
 echo "    - 模式: Stream（WebSocket 长连接）"
-echo "    - 私聊: 已启用"
+echo "    - 私聊: 已启用（pairing 模式，需在 Web 面板配对用户）"
 echo "    - 群聊: 已启用"
+echo ""
+echo "  如需允许所有人直接使用（降低安全性）："
+echo "    openclaw config set channels.dingtalk.dmPolicy open"
 echo ""
 echo "  测试方式："
 echo "    1. 在钉钉中搜索并打开你创建的机器人应用"

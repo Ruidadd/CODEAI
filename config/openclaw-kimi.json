@@ -25,7 +25,7 @@
         "host": "0.0.0.0"
     },
     "security": {
-        "allowedOrigins": ["*"],
+        "allowedOrigins": ["http://YOUR_SERVER_IP:18789"],
         "rateLimit": {
             "enabled": true,
             "maxRequests": 60,

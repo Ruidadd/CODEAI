@@ -303,31 +303,114 @@ docker stats --no-stream
 
 ## 八、安全加固
 
-### 基础安全措施
+> **OpenClaw 作为 AI Agent 具有执行 Shell 命令和读写文件的能力。**
+> **请勿在存有敏感数据的服务器上运行 OpenClaw，建议使用独立的服务器实例。**
+
+### 8.1 部署后必做安全五步
+
+| # | 操作 | 命令/说明 |
+|---|------|----------|
+| 1 | 升级到 v2026.1.29+ | 修复 CVE-2026-25253（远程代码执行） |
+| 2 | 确认 Token 认证已启用 | `grep OPENCLAW_GATEWAY_TOKEN /opt/openclaw/.env` |
+| 3 | 运行安全审计 | `openclaw security audit --deep` |
+| 4 | 设置 API 支出限额 | Moonshot 平台 → 账户管理 → 消费限额 |
+| 5 | 收紧 DM 策略 | 将 `dmPolicy` 从 `open` 改为 `pairing`（需配对后才能使用） |
+
+### 8.2 Nginx 反向代理 + HTTPS（强烈推荐）
+
+直接暴露 18789 端口到公网存在安全风险，建议使用 Nginx 反向代理 + Let's Encrypt 免费 SSL 证书。
+
+**安装 Nginx 和 Certbot：**
+```bash
+# Ubuntu/Debian
+apt install -y nginx certbot python3-certbot-nginx
+
+# CentOS/Alibaba Cloud Linux
+yum install -y nginx certbot python3-certbot-nginx
+```
+
+**配置 Nginx（`/etc/nginx/conf.d/openclaw.conf`）：**
+```nginx
+server {
+    listen 80;
+    server_name your-domain.com;  # 替换为你的域名
+
+    location / {
+        proxy_pass http://127.0.0.1:18789;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # 安全头
+        add_header X-Frame-Options DENY;
+        add_header X-Content-Type-Options nosniff;
+        add_header X-XSS-Protection "1; mode=block";
+        add_header Referrer-Policy "strict-origin-when-cross-origin";
+    }
+}
+```
+
+**申请 SSL 证书：**
+```bash
+certbot --nginx -d your-domain.com
+```
+
+**配置完成后，在阿里云安全组中：**
+- 开放 80 和 443 端口
+- **关闭** 18789 端口的公网访问（仅允许 127.0.0.1）
+
+### 8.3 服务器基础安全
 
 ```bash
-# 1. 修改 SSH 端口（可选）
-# 编辑 /etc/ssh/sshd_config，修改 Port 22 为其他端口
+# 1. 安装 fail2ban 防暴力破解
+apt install -y fail2ban  # Ubuntu
+yum install -y fail2ban  # CentOS
 
 # 2. 禁止 root 密码登录（配置 SSH 密钥后）
 # 编辑 /etc/ssh/sshd_config：PasswordAuthentication no
 
-# 3. 安装 fail2ban 防暴力破解
-apt install -y fail2ban  # Ubuntu
-yum install -y fail2ban  # CentOS
-
-# 4. 启用自动安全更新
+# 3. 启用自动安全更新
 apt install -y unattended-upgrades  # Ubuntu
 ```
 
-### OpenClaw 安全配置
+### 8.4 API Key 安全
 
-- 部署完成后，在 OpenClaw Web 面板中设置强密码
-- 如不需要公网访问 Web 面板，在安全组中移除 18789 端口的公网访问规则
-- 定期更新 OpenClaw 到最新版本以获取安全补丁
-- 建议升级到 v2026.1.29 以上版本（修复了 CVE-2026-25253）
+- `.env` 文件权限已设置为 `600`（仅 root 可读），请勿更改
+- 在 Moonshot 平台设置消费限额，防止 Key 泄露后被刷
+- 定期轮换 API Key（建议每 90 天）
+- 如需更高安全性，考虑使用 Docker Secrets 管理密钥
 
-### 注意事项
+### 8.5 DM 策略说明
 
-> OpenClaw 作为 AI Agent 具有执行 Shell 命令和读写文件的能力。
-> 请勿在存有敏感数据的服务器上运行 OpenClaw，建议使用独立的服务器实例。
+| 策略 | 说明 | 安全级别 |
+|------|------|----------|
+| `open` | 任何人都可以直接和机器人对话 | 低 |
+| `pairing` | 需要先在 Web 面板中配对用户才能使用 | **中（推荐）** |
+| `disabled` | 禁用私聊功能 | 高 |
+
+修改方式：
+```bash
+# 钉钉
+openclaw config set channels.dingtalk.dmPolicy pairing
+
+# QQ (OneBot)
+openclaw config set channels.onebot.dmPolicy pairing
+```
+
+### 8.6 定期安全检查
+
+建议每周运行一次健康检查和安全审计：
+```bash
+# 健康检查（含安全检查项）
+bash scripts/health-check.sh
+
+# 深度安全审计
+openclaw security audit --deep
+
+# 检查 OpenClaw 更新
+cd ~/openclaw/openclaw && git fetch && git log HEAD..origin/main --oneline
+```

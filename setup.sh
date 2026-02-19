@@ -34,7 +34,7 @@ echo "=============================================="
 echo ""
 
 # ── Step 1: 环境预检 ─────────────────────────────────────────────────────────
-info "Step 1/6: 环境预检..."
+info "Step 1/7: 环境预检..."
 
 # 检查内存
 TOTAL_MEM_KB=$(grep MemTotal /proc/meminfo | awk '{print $2}')
@@ -52,19 +52,19 @@ fi
 ok "磁盘空间检查通过：${AVAIL_DISK_GB}GB 可用"
 
 # ── Step 2: 安装 OpenClaw ────────────────────────────────────────────────────
-info "Step 2/6: 安装 OpenClaw..."
+info "Step 2/7: 安装 OpenClaw..."
 bash "${SCRIPT_DIR}/scripts/install-openclaw.sh"
 
 # ── Step 3: 配置 Kimi 2.5 模型 ──────────────────────────────────────────────
-info "Step 3/6: 配置 Kimi 2.5 模型..."
+info "Step 3/7: 配置 Kimi 2.5 模型..."
 bash "${SCRIPT_DIR}/scripts/configure-model.sh"
 
 # ── Step 4: 配置防火墙 ──────────────────────────────────────────────────────
-info "Step 4/6: 配置防火墙..."
+info "Step 4/7: 配置防火墙..."
 bash "${SCRIPT_DIR}/scripts/configure-firewall.sh"
 
 # ── Step 5: 启动服务 ────────────────────────────────────────────────────────
-info "Step 5/6: 启动 OpenClaw 服务..."
+info "Step 5/7: 启动 OpenClaw 服务..."
 
 OPENCLAW_HOME="${OPENCLAW_HOME:-/opt/openclaw}"
 
@@ -113,8 +113,35 @@ for i in $(seq 1 30); do
 done
 
 # ── Step 6: 健康检查 ────────────────────────────────────────────────────────
-info "Step 6/6: 执行健康检查..."
+info "Step 6/7: 执行健康检查..."
 bash "${SCRIPT_DIR}/scripts/health-check.sh"
+
+# ── Step 7: 安全审计 ────────────────────────────────────────────────────────
+info "Step 7/7: 安全审计..."
+if command -v openclaw &>/dev/null; then
+    CURRENT_VER=$(openclaw --version 2>/dev/null || echo "0.0.0")
+    # 检查是否 >= v2026.1.29（修复 CVE-2026-25253）
+    if [[ "$(printf '%s\n' "2026.1.29" "$CURRENT_VER" | sort -V | head -1)" != "2026.1.29" ]]; then
+        warn "当前版本 ${CURRENT_VER} 低于 v2026.1.29，存在 CVE-2026-25253 漏洞"
+        warn "强烈建议更新：cd ~/openclaw/openclaw && git pull && docker compose up -d --build"
+    else
+        ok "版本安全检查通过：${CURRENT_VER}"
+    fi
+    openclaw security audit --deep 2>/dev/null && ok "安全审计完成" || warn "安全审计命令不可用，请手动检查"
+else
+    warn "openclaw CLI 不可用，跳过安全审计。部署后请手动运行：openclaw security audit --deep"
+fi
+
+# 检查 .env 权限
+if [[ -f "${OPENCLAW_HOME}/.env" ]]; then
+    ENV_PERMS=$(stat -c "%a" "${OPENCLAW_HOME}/.env" 2>/dev/null || echo "unknown")
+    if [[ "$ENV_PERMS" == "600" ]]; then
+        ok ".env 文件权限安全 (600)"
+    else
+        warn ".env 文件权限为 ${ENV_PERMS}，正在修复为 600..."
+        chmod 600 "${OPENCLAW_HOME}/.env"
+    fi
+fi
 
 # ── 完成 ────────────────────────────────────────────────────────────────────
 SERVER_IP=$(curl -sf http://100.100.100.200/latest/meta-data/eipv4 2>/dev/null \
@@ -143,4 +170,10 @@ echo "    钉钉:   bash config/channels/dingtalk-setup.sh"
 echo "    QQ:     bash config/channels/qq-setup.sh"
 echo ""
 echo "  查看日志:  docker compose logs -f openclaw-gateway"
+echo ""
+echo -e "  ${YELLOW}安全提醒:${NC}"
+echo "    - 请在 Moonshot 平台设置 API 支出限额，防止 Key 泄露后被刷"
+echo "    - 建议配置 Nginx 反向代理 + HTTPS（见 docs/DEPLOYMENT_GUIDE.md）"
+echo "    - 定期更新 OpenClaw 获取安全补丁"
+echo "    - 请勿在存有敏感数据的服务器上运行 OpenClaw"
 echo "=============================================="
