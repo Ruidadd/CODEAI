@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Red VS Blue</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a1a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Arial Black', Arial, sans-serif;
+    overflow: hidden;
+  }
+  canvas {
+    display: block;
+    max-width: 100vw;
+    max-height: 100vh;
+  }
+</style>
+</head>
+<body>
+<canvas id="gameCanvas"></canvas>
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+// --- CONFIG ---
+const C = {
+  W: 900, H: 720,
+  ARENA_CX: 450, ARENA_CY: 420,
+  ARENA_R: 270,
+  BG: '#0a0a1a',
+  GRID_COLOR: 'rgba(255,255,255,0.04)',
+  GRID_SIZE: 36,
+  CHAR_L_R: 22, CHAR_S_R: 14,
+  CHAR_L_HP: 4, CHAR_S_HP: 2,
+  CHAR_L_SPD: 1.3, CHAR_S_SPD: 2.1,
+  BULLET_SPD: 6, BULLET_R: 3.5,
+  SHOOT_MIN: 70, SHOOT_MAX: 150,
+  SEP_DIST: 55, WALL_DIST: 45,
+};
+
+canvas.width = C.W;
+canvas.height = C.H;
+
+// --- UTILS ---
+function dist(a, b) { return Math.hypot(b.x - a.x, b.y - a.y); }
+function rand(min, max) { return min + Math.random() * (max - min); }
+function randInt(min, max) { return Math.floor(rand(min, max + 1)); }
+
+// --- GAME STATE ---
+const game = {
+  state: 'playing', // 'playing' | 'red_wins' | 'blue_wins'
+  tick: 0,
+  characters: [],
+  bullets: [],
+  redTeam: [],
+  blueTeam: [],
+  maxRedHp: 0,
+  maxBlueHp: 0,
+};
+
+// --- SPAWN ---
+function spawnCharacter(id, team, r, hp, spd) {
+  let x, y, attempts = 0;
+  do {
+    const angle = rand(0, Math.PI * 2);
+    const d = rand(30, C.ARENA_R - r - 20);
+    const side = team === 'red' ? -1 : 1;
+    x = C.ARENA_CX + side * rand(20, C.ARENA_R - r - 20) * 0.85;
+    y = C.ARENA_CY + rand(-C.ARENA_R + r + 20, C.ARENA_R - r - 20) * 0.75;
+    attempts++;
+  } while (Math.hypot(x - C.ARENA_CX, y - C.ARENA_CY) > C.ARENA_R - r - 15 && attempts < 100);
+
+  return {
+    id, team, x, y,
+    vx: rand(-1.5, 1.5), vy: rand(-1.5, 1.5),
+    radius: r, maxHp: hp, hp,
+    speed: spd,
+    shootCooldown: randInt(C.SHOOT_MIN, C.SHOOT_MAX),
+    wanderAngle: rand(0, Math.PI * 2),
+    state: 'alive',
+    deathTimer: 40,
+    mouthCurve: 1,
+    hitFlash: 0,
+    smileTimer: 0,
+  };
+}
+
+function initTeams() {
+  game.characters = [];
+  game.bullets = [];
+  let id = 0;
+  // 2 large + 4 small per team
+  for (const team of ['red', 'blue']) {
+    for (let i = 0; i < 2; i++) game.characters.push(spawnCharacter(id++, team, C.CHAR_L_R, C.CHAR_L_HP, C.CHAR_L_SPD));
+    for (let i = 0; i < 4; i++) game.characters.push(spawnCharacter(id++, team, C.CHAR_S_R, C.CHAR_S_HP, C.CHAR_S_SPD));
+  }
+  game.redTeam  = game.characters.filter(c => c.team === 'red');
+  game.blueTeam = game.characters.filter(c => c.team === 'blue');
+  game.maxRedHp  = game.redTeam.reduce((s, c) => s + c.maxHp, 0);
+  game.maxBlueHp = game.blueTeam.reduce((s, c) => s + c.maxHp, 0);
+  game.tick = 0;
+}
+
+// --- AI ---
+function seekForce(char, enemies) {
+  let nearest = null, minD = Infinity;
+  for (const e of enemies) {
+    if (e.state !== 'alive') continue;
+    const d = dist(char, e);
+    if (d < minD) { minD = d; nearest = e; }
+  }
+  if (!nearest) return { x: 0, y: 0 };
+  const a = Math.atan2(nearest.y - char.y, nearest.x - char.x);
+  return { x: Math.cos(a), y: Math.sin(a) };
+}
+
+function wallForce(char) {
+  const dx = char.x - C.ARENA_CX, dy = char.y - C.ARENA_CY;
+  const d = Math.hypot(dx, dy);
+  const toWall = C.ARENA_R - d - char.radius;
+  if (toWall < C.WALL_DIST && d > 0) {
+    const s = 1 - toWall / C.WALL_DIST;
+    return { x: -(dx / d) * s, y: -(dy / d) * s };
+  }
+  return { x: 0, y: 0 };
+}
+
+function separateForce(char, allies) {
+  let fx = 0, fy = 0;
+  for (const a of allies) {
+    if (a === char || a.state !== 'alive') continue;
+    const d = dist(char, a);
+    if (d < C.SEP_DIST && d > 0) {
+      const s = 1 - d / C.SEP_DIST;
+      fx += (char.x - a.x) / d * s;
+      fy += (char.y - a.y) / d * s;
+    }
+  }
+  return { x: fx, y: fy };
+}
+
+function wanderForce(char) {
+  char.wanderAngle += rand(-0.35, 0.35);
+  return { x: Math.cos(char.wanderAngle), y: Math.sin(char.wanderAngle) };
+}
+
+function applyAI(char, enemies, allies) {
+  const sf  = seekForce(char, enemies);
+  const wf  = wallForce(char);
+  const sep = separateForce(char, allies);
+  const wd  = wanderForce(char);
+
+  char.vx += sf.x * 0.55 + wf.x * 1.8 + sep.x * 1.1 + wd.x * 0.25;
+  char.vy += sf.y * 0.55 + wf.y * 1.8 + sep.y * 1.1 + wd.y * 0.25;
+
+  const spd = Math.hypot(char.vx, char.vy);
+  if (spd > char.speed) {
+    char.vx = char.vx / spd * char.speed;
+    char.vy = char.vy / spd * char.speed;
+  }
+}
+
+function bounceArena(char) {
+  const dx = char.x - C.ARENA_CX, dy = char.y - C.ARENA_CY;
+  const d = Math.hypot(dx, dy);
+  if (d + char.radius > C.ARENA_R && d > 0) {
+    const overlap = d + char.radius - C.ARENA_R;
+    const nx = dx / d, ny = dy / d;
+    char.x -= nx * overlap;
+    char.y -= ny * overlap;
+    const dot = char.vx * nx + char.vy * ny;
+    char.vx -= 2 * dot * nx;
+    char.vy -= 2 * dot * ny;
+    char.vx *= 0.82;
+    char.vy *= 0.82;
+  }
+}
+
+function resolveOverlaps() {
+  const alive = game.characters.filter(c => c.state === 'alive');
+  for (let i = 0; i < alive.length; i++) {
+    for (let j = i + 1; j < alive.length; j++) {
+      const a = alive[i], b = alive[j];
+      const dx = b.x - a.x, dy = b.y - a.y;
+      const d = Math.hypot(dx, dy);
+      const minD = a.radius + b.radius;
+      if (d < minD && d > 0) {
+        const push = (minD - d) * 0.5;
+        const nx = dx / d, ny = dy / d;
+        a.x -= nx * push; a.y -= ny * push;
+        b.x += nx * push; b.y += ny * push;
+      }
+    }
+  }
+}
+
+function tryShoot(char, enemies) {
+  if (--char.shootCooldown > 0) return;
+  let nearest = null, minD = Infinity;
+  for (const e of enemies) {
+    if (e.state !== 'alive') continue;
+    const d = dist(char, e);
+    if (d < minD) { minD = d; nearest = e; }
+  }
+  if (!nearest) { char.shootCooldown = 10; return; }
+  const spread = rand(-0.22, 0.22);
+  const a = Math.atan2(nearest.y - char.y, nearest.x - char.x) + spread;
+  game.bullets.push({
+    team: char.team,
+    x: char.x + Math.cos(a) * (char.radius + C.BULLET_R + 2),
+    y: char.y + Math.sin(a) * (char.radius + C.BULLET_R + 2),
+    vx: Math.cos(a) * C.BULLET_SPD,
+    vy: Math.sin(a) * C.BULLET_SPD,
+    radius: C.BULLET_R,
+    active: true,
+    trail: [],
+  });
+  char.shootCooldown = randInt(C.SHOOT_MIN, C.SHOOT_MAX);
+}
+
+function checkCollisions() {
+  for (const b of game.bullets) {
+    if (!b.active) continue;
+    const targets = b.team === 'red' ? game.blueTeam : game.redTeam;
+    for (const c of targets) {
+      if (c.state !== 'alive') continue;
+      const d = dist(b, c);
+      if (d < b.radius + c.radius) {
+        c.hp--;
+        c.hitFlash = 10;
+        c.mouthCurve = -1;
+        c.smileTimer = 150;
+        b.active = false;
+        if (c.hp <= 0) {
+          c.state = 'dead';
+          c.deathTimer = 40;
+        }
+        break;
+      }
+    }
+  }
+}
+
+// --- UPDATE ---
+function update() {
+  if (game.state !== 'playing') return;
+  game.tick++;
+
+  // Characters
+  for (const char of game.characters) {
+    if (char.state === 'dead') {
+      char.deathTimer--;
+      continue;
+    }
+    if (char.hitFlash > 0) char.hitFlash--;
+    if (char.smileTimer > 0) {
+      char.smileTimer--;
+      if (char.smileTimer === 0) char.mouthCurve = 1;
+    }
+
+    const enemies = char.team === 'red' ? game.blueTeam : game.redTeam;
+    const allies  = char.team === 'red' ? game.redTeam  : game.blueTeam;
+    applyAI(char, enemies, allies);
+    char.x += char.vx;
+    char.y += char.vy;
+    bounceArena(char);
+    tryShoot(char, enemies);
+  }
+
+  resolveOverlaps();
+
+  // Bullets
+  for (const b of game.bullets) {
+    if (!b.active) continue;
+    b.trail.unshift({ x: b.x, y: b.y });
+    if (b.trail.length > 6) b.trail.pop();
+    b.x += b.vx;
+    b.y += b.vy;
+    if (Math.hypot(b.x - C.ARENA_CX, b.y - C.ARENA_CY) + b.radius > C.ARENA_R) {
+      b.active = false;
+    }
+  }
+
+  checkCollisions();
+
+  // Cleanup
+  game.bullets = game.bullets.filter(b => b.active);
+  game.redTeam  = game.redTeam.filter(c => c.state === 'alive');
+  game.blueTeam = game.blueTeam.filter(c => c.state === 'alive');
+
+  if (game.redTeam.length === 0 && game.blueTeam.length === 0) {
+    game.state = 'draw';
+  } else if (game.redTeam.length === 0) {
+    game.state = 'blue_wins';
+  } else if (game.blueTeam.length === 0) {
+    game.state = 'red_wins';
+  }
+}
+
+// --- DRAW ---
+function drawGrid() {
+  ctx.strokeStyle = C.GRID_COLOR;
+  ctx.lineWidth = 1;
+  for (let x = 0; x < C.W; x += C.GRID_SIZE) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, C.H); ctx.stroke();
+  }
+  for (let y = 0; y < C.H; y += C.GRID_SIZE) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(C.W, y); ctx.stroke();
+  }
+}
+
+function drawArena() {
+  // Outer glow rings
+  for (let i = 5; i >= 1; i--) {
+    ctx.beginPath();
+    ctx.arc(C.ARENA_CX, C.ARENA_CY, C.ARENA_R + i * 3, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(160,160,255,${0.03 * i})`;
+    ctx.lineWidth = 4;
+    ctx.stroke();
+  }
+  // Fill dark interior
+  ctx.beginPath();
+  ctx.arc(C.ARENA_CX, C.ARENA_CY, C.ARENA_R, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(5,5,20,0.5)';
+  ctx.fill();
+  // Main border
+  ctx.beginPath();
+  ctx.arc(C.ARENA_CX, C.ARENA_CY, C.ARENA_R, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(200,200,255,0.65)';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+}
+
+function drawCharacter(char) {
+  const alpha = char.state === 'dead' ? Math.max(0, char.deathTimer / 40) : 1;
+  if (alpha <= 0) return;
+  ctx.save();
+  ctx.globalAlpha = alpha;
+
+  const isRed = char.team === 'red';
+  const baseColor  = isRed ? '#ff3344' : '#3388ff';
+  const lightColor = isRed ? '#ff8899' : '#88bbff';
+  const flashColor = '#ffffff';
+  const flashing   = char.hitFlash > 0;
+
+  // Glow
+  ctx.shadowColor  = flashing ? '#fff' : baseColor;
+  ctx.shadowBlur   = flashing ? 20 : 14;
+
+  // Body gradient
+  const grad = ctx.createRadialGradient(
+    char.x - char.radius * 0.32, char.y - char.radius * 0.32, 0,
+    char.x, char.y, char.radius
+  );
+  grad.addColorStop(0, flashing ? '#fff' : lightColor);
+  grad.addColorStop(1, flashing ? '#ccc' : baseColor);
+
+  ctx.beginPath();
+  ctx.arc(char.x, char.y, char.radius, 0, Math.PI * 2);
+  ctx.fillStyle = grad;
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Eyes
+  const eyeR = char.radius * 0.17;
+  const eyeSpread = char.radius * 0.30;
+  const eyeY = char.y - char.radius * 0.18;
+  ctx.fillStyle = '#1a1a2e';
+  ctx.beginPath();
+  ctx.ellipse(char.x - eyeSpread, eyeY, eyeR * 1.1, eyeR * 1.25, 0, 0, Math.PI * 2);
+  ctx.ellipse(char.x + eyeSpread, eyeY, eyeR * 1.1, eyeR * 1.25, 0, 0, Math.PI * 2);
+  ctx.fill();
+  // Eye shine
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  ctx.beginPath();
+  ctx.arc(char.x - eyeSpread + eyeR * 0.45, eyeY - eyeR * 0.4, eyeR * 0.4, 0, Math.PI * 2);
+  ctx.arc(char.x + eyeSpread + eyeR * 0.45, eyeY - eyeR * 0.4, eyeR * 0.4, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Mouth
+  const mouthCX = char.x;
+  const mouthBaseY = char.y + char.radius * 0.28;
+  const mouthW = char.radius * 0.38;
+  ctx.beginPath();
+  ctx.strokeStyle = '#1a1a2e';
+  ctx.lineWidth = Math.max(1.2, char.radius * 0.07);
+  ctx.lineCap = 'round';
+  if (char.mouthCurve >= 0) {
+    ctx.arc(mouthCX, mouthBaseY - mouthW * 0.3, mouthW, 0.1, Math.PI - 0.1);
+  } else {
+    ctx.arc(mouthCX, mouthBaseY + mouthW * 0.4, mouthW, Math.PI + 0.1, -0.1);
+  }
+  ctx.stroke();
+
+  // HP bar (only for alive chars with damage taken)
+  if (char.state === 'alive' && char.hp < char.maxHp) {
+    const bw = char.radius * 2;
+    const bh = 4;
+    const bx = char.x - char.radius;
+    const by = char.y - char.radius - 8;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.fillRect(bx, by, bw, bh);
+    ctx.fillStyle = isRed ? '#ff4455' : '#44aaff';
+    ctx.fillRect(bx, by, bw * (char.hp / char.maxHp), bh);
+  }
+
+  ctx.restore();
+}
+
+function drawBullet(b) {
+  // Trail
+  for (let i = 0; i < b.trail.length; i++) {
+    const t = (b.trail.length - i) / b.trail.length;
+    const tp = b.trail[i];
+    ctx.beginPath();
+    ctx.arc(tp.x, tp.y, b.radius * t * 0.65, 0, Math.PI * 2);
+    ctx.fillStyle = b.team === 'red'
+      ? `rgba(255,80,80,${t * 0.35})`
+      : `rgba(60,150,255,${t * 0.35})`;
+    ctx.fill();
+  }
+  // Head
+  ctx.beginPath();
+  ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+  ctx.fillStyle = b.team === 'red' ? '#ffaa55' : '#aaddff';
+  ctx.shadowColor = b.team === 'red' ? '#ff6600' : '#2266ff';
+  ctx.shadowBlur = 8;
+  ctx.fillStyle = b.team === 'red' ? '#ffcc44' : '#88ccff';
+  ctx.fill();
+  ctx.shadowBlur = 0;
+}
+
+function drawHeart(x, y, size, filled, color) {
+  ctx.save();
+  ctx.translate(x, y);
+  const s = size / 10;
+  ctx.scale(s, s);
+  ctx.beginPath();
+  // Heart path (unscaled, ~10px)
+  ctx.moveTo(0, -2);
+  ctx.bezierCurveTo(-5, -7, -10, -2, -5, 3);
+  ctx.lineTo(0, 8);
+  ctx.lineTo(5, 3);
+  ctx.bezierCurveTo(10, -2, 5, -7, 0, -2);
+  ctx.closePath();
+  if (filled) {
+    ctx.fillStyle = color;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 8 / s;
+    ctx.fill();
+  } else {
+    ctx.strokeStyle = 'rgba(150,150,150,0.35)';
+    ctx.lineWidth = 1.5 / s;
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawHeartsUI() {
+  const hs = 18; // heart size
+  const gap = 3;
+  const perRow = 10;
+
+  // --- RED team hearts (left side, top) ---
+  const redAliveHp = game.characters
+    .filter(c => c.team === 'red' && c.state === 'alive')
+    .reduce((s, c) => s + c.hp, 0);
+  const redTotalHp = game.maxRedHp;
+
+  // Team icon: red circle
+  ctx.beginPath();
+  ctx.arc(28, 38, 16, 0, Math.PI * 2);
+  ctx.fillStyle = '#ff3344';
+  ctx.shadowColor = '#ff3344';
+  ctx.shadowBlur = 10;
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  for (let i = 0; i < redTotalHp; i++) {
+    const row = Math.floor(i / perRow);
+    const col = i % perRow;
+    const hx = 52 + col * (hs + gap) + hs / 2;
+    const hy = 20 + row * (hs + gap + 2) + hs / 2;
+    drawHeart(hx, hy, hs, i < redAliveHp, '#ff3344');
+  }
+
+  // --- BLUE team hearts (right side, top) ---
+  const blueAliveHp = game.characters
+    .filter(c => c.team === 'blue' && c.state === 'alive')
+    .reduce((s, c) => s + c.hp, 0);
+  const blueTotalHp = game.maxBlueHp;
+
+  const blueStartX = C.W - 50 - perRow * (hs + gap);
+
+  ctx.beginPath();
+  ctx.arc(C.W - 28, 38, 16, 0, Math.PI * 2);
+  ctx.fillStyle = '#3388ff';
+  ctx.shadowColor = '#3388ff';
+  ctx.shadowBlur = 10;
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  for (let i = 0; i < blueTotalHp; i++) {
+    const row = Math.floor(i / perRow);
+    const col = i % perRow;
+    const hx = blueStartX + col * (hs + gap) + hs / 2;
+    const hy = 20 + row * (hs + gap + 2) + hs / 2;
+    drawHeart(hx, hy, hs, i < blueAliveHp, '#3388ff');
+  }
+}
+
+function drawTitle() {
+  ctx.textAlign = 'center';
+  ctx.font = 'bold 22px "Arial Black", Arial';
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.shadowColor = 'rgba(150,150,255,0.6)';
+  ctx.shadowBlur = 12;
+  ctx.fillText('Red VS Blue', C.W / 2, 110);
+  ctx.shadowBlur = 0;
+}
+
+function drawWinScreen() {
+  const isRed  = game.state === 'red_wins';
+  const isDraw = game.state === 'draw';
+  const color  = isDraw ? '#ffffff' : (isRed ? '#ff3344' : '#3388ff');
+  const text   = isDraw ? 'DRAW!' : (isRed ? 'RED WINS!' : 'BLUE WINS!');
+
+  // Overlay
+  ctx.fillStyle = 'rgba(10,10,26,0.78)';
+  ctx.fillRect(0, 0, C.W, C.H);
+
+  ctx.textAlign = 'center';
+  ctx.fillStyle = color;
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 40;
+  ctx.font = 'bold 74px "Arial Black", Arial';
+  ctx.fillText(text, C.W / 2, C.H / 2 - 20);
+
+  ctx.shadowBlur = 0;
+  ctx.font = '22px Arial';
+  ctx.fillStyle = 'rgba(255,255,255,0.65)';
+  ctx.fillText('Click or press Space to restart', C.W / 2, C.H / 2 + 40);
+}
+
+function draw() {
+  // Background
+  ctx.fillStyle = C.BG;
+  ctx.fillRect(0, 0, C.W, C.H);
+
+  drawGrid();
+  drawArena();
+
+  // Bullets
+  for (const b of game.bullets) drawBullet(b);
+
+  // Dead characters (behind alive)
+  for (const c of game.characters) {
+    if (c.state === 'dead' && c.deathTimer > 0) drawCharacter(c);
+  }
+  // Alive characters
+  for (const c of game.characters) {
+    if (c.state === 'alive') drawCharacter(c);
+  }
+
+  drawHeartsUI();
+  drawTitle();
+
+  if (game.state !== 'playing') drawWinScreen();
+}
+
+// --- GAME LOOP ---
+function gameLoop() {
+  update();
+  draw();
+  requestAnimationFrame(gameLoop);
+}
+
+// --- RESTART ---
+function restart() {
+  if (game.state !== 'playing') {
+    game.state = 'playing';
+    initTeams();
+  }
+}
+
+canvas.addEventListener('click', restart);
+window.addEventListener('keydown', e => {
+  if (e.code === 'Space') { e.preventDefault(); restart(); }
+});
+
+// --- START ---
+initTeams();
+requestAnimationFrame(gameLoop);
+</script>
+</body>
+</html>
