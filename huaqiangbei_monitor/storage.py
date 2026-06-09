@@ -107,20 +107,27 @@ class PriceStorage:
     def get_latest_prices(self, part_number: str) -> list[PriceRecord]:
         """获取某型号各来源的最新价格"""
         with self._session() as s:
-            # SQLite 子查询：每个来源取最新一条
-            from sqlalchemy import text
-            results = s.execute(
-                text("""
-                    SELECT * FROM price_records p1
-                    WHERE part_number = :part
-                    AND scraped_at = (
-                        SELECT MAX(scraped_at) FROM price_records p2
-                        WHERE p2.part_number = p1.part_number
-                        AND p2.source = p1.source
+            # 每个来源取最新一条记录（返回 ORM 对象，保留 datetime 等类型）
+            sources = (
+                s.query(PriceRecord.source)
+                .filter(PriceRecord.part_number == part_number)
+                .distinct()
+                .all()
+            )
+            results = []
+            for (source,) in sources:
+                latest = (
+                    s.query(PriceRecord)
+                    .filter(
+                        PriceRecord.part_number == part_number,
+                        PriceRecord.source == source,
                     )
-                """),
-                {"part": part_number},
-            ).fetchall()
+                    .order_by(PriceRecord.scraped_at.desc())
+                    .first()
+                )
+                if latest:
+                    results.append(latest)
+            results.sort(key=lambda r: r.price)
             return results
 
     def get_price_history(

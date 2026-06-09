@@ -93,6 +93,34 @@ class TestStorage:
         alerts = storage.get_recent_alerts(hours=1)
         assert len(alerts) == 0
 
+    def test_get_latest_prices_returns_datetime(self, storage):
+        """回归: get_latest_prices 须返回 ORM 对象, scraped_at 为 datetime 而非 str"""
+        for src, name, price in [
+            ("szlcsc", "立创商城", 9.8),
+            ("icsmart", "华强北网", 8.5),
+        ]:
+            storage.save_price(
+                PriceInfo("STM32F103C8T6", src, name, price, min_qty=1)
+            )
+        rows = storage.get_latest_prices("STM32F103C8T6")
+        assert len(rows) == 2
+        for r in rows:
+            assert isinstance(r.scraped_at, datetime)
+            # 报表会调用 strftime, 这里确保不抛异常
+            assert r.scraped_at.strftime("%m-%d %H:%M")
+        # 按价格升序
+        assert rows[0].price <= rows[1].price
+
+    def test_get_latest_prices_one_per_source(self, storage):
+        """同一来源多次抓取, 只返回最新一条"""
+        for price in [10.0, 10.1, 10.5]:
+            storage.save_price(
+                PriceInfo("NE555", "szlcsc", "立创商城", price, min_qty=1)
+            )
+        rows = storage.get_latest_prices("NE555")
+        assert len(rows) == 1
+        assert rows[0].price == 10.5
+
     def test_get_stats(self, storage):
         storage.add_component("W25Q64")
         stats = storage.get_stats()
