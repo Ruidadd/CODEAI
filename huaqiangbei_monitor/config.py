@@ -18,6 +18,21 @@ PRICE_CHANGE_ALERT_THRESHOLD = float(os.getenv("ALERT_THRESHOLD", "5.0"))  # 涨
 REQUEST_TIMEOUT = int(os.getenv("REQUEST_TIMEOUT", "15"))
 REQUEST_DELAY_SECONDS = float(os.getenv("REQUEST_DELAY", "1.5"))  # 请求间隔，防封
 
+# 反爬/拦截特征(页面正文命中即判定为被拦截, 小写匹配)
+BLOCKED_SIGNATURES = [
+    "请输入验证码",
+    "滑动验证",
+    "人机验证",
+    "captcha",
+    "访问过于频繁",
+    "拒绝访问",
+    "access denied",
+    "are you a robot",
+    "verify you are human",
+    "_sec_redirect",          # 常见 JS 挑战跳转
+    "window.location.href=",  # 纯跳转壳页(无内容)
+]
+
 HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "

@@ -7,5 +7,8 @@ __pycache__/
 dist/
 build/
 .pytest_cache/
-*.csv
-*.json
+/*.csv
+/*.json
+
+# 但保留解析 fixture 样本
+!tests/fixtures/**

@@ -1,0 +1,44 @@
+{
+  "code": 200,
+  "success": true,
+  "data": {
+    "productList": [
+      {
+        "productId": 12345,
+        "productCode": "STM32F103C8T6",
+        "productModel": "STM32F103C8T6",
+        "brandName": "ST/意法半导体",
+        "minBuyNumber": 1,
+        "stockNumber": 12860,
+        "discountPrice": null,
+        "productPriceList": [
+          {"startNumber": 1, "endNumber": 9, "productPrice": 9.85},
+          {"startNumber": 10, "endNumber": 29, "productPrice": 9.20},
+          {"startNumber": 30, "endNumber": null, "productPrice": 8.60}
+        ]
+      },
+      {
+        "productId": 12346,
+        "productCode": "STM32F103C8T7",
+        "productModel": "STM32F103C8T7",
+        "brandName": "ST/意法半导体",
+        "minBuyNumber": 1,
+        "stockNumber": 200,
+        "productPriceList": [
+          {"startNumber": 1, "endNumber": 9, "productPrice": 10.50}
+        ]
+      },
+      {
+        "productId": 99999,
+        "productCode": "LM358DR",
+        "productModel": "LM358DR",
+        "brandName": "TI/德州仪器",
+        "minBuyNumber": 10,
+        "stockNumber": 50000,
+        "productPriceList": [
+          {"startNumber": 10, "endNumber": 99, "productPrice": 0.42}
+        ]
+      }
+    ]
+  }
+}
