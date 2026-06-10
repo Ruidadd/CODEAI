@@ -192,6 +192,18 @@ def cmd_watch(ctx, interval, parts):
         console.print("\n[yellow]监控已停止[/yellow]")
 
 
+@cli.command("report")
+@click.option("--output", "-o", default=None, help="输出文件路径(默认 price_report_<时间>.html)")
+@click.option("--days", default=7, show_default=True, help="历史走势天数")
+@click.pass_context
+def cmd_report(ctx, output, days):
+    """生成静态 HTML 报告(无需服务器, 直接用浏览器打开)"""
+    from .report_gen import generate_report
+    path = generate_report(db_path=ctx.obj["db"], output_path=output, history_days=days)
+    console.print(f"[green]✓[/green] 报告已生成: [cyan]{path}[/cyan]")
+    console.print("[dim]用浏览器直接打开该文件即可查看完整面板[/dim]")
+
+
 @cli.command("web")
 @click.option("--host", default="0.0.0.0", show_default=True, help="监听地址")
 @click.option("--port", default=8000, show_default=True, help="端口")
