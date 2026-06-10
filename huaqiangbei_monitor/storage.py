@@ -147,6 +147,17 @@ class PriceStorage:
                 q = q.filter(PriceRecord.source == source)
             return q.order_by(PriceRecord.scraped_at.asc()).all()
 
+    def get_latest_two(self, part_number: str, source: str) -> list[PriceRecord]:
+        """某型号某来源最近两条记录(用于计算环比涨跌)"""
+        with self._session() as s:
+            return (
+                s.query(PriceRecord)
+                .filter_by(part_number=part_number, source=source)
+                .order_by(PriceRecord.scraped_at.desc())
+                .limit(2)
+                .all()
+            )
+
     def get_recent_alerts(self, hours: int = 24) -> list[PriceAlert]:
         with self._session() as s:
             since = datetime.utcnow() - timedelta(hours=hours)

@@ -13,7 +13,25 @@ python main.py price STM32F103C8T6       # 看各来源最新报价(按价格升
 python main.py history STM32F103C8T6     # 价格历史
 python main.py alerts                    # 价格变化告警
 python main.py watch --interval 30       # 每30分钟定时监控
+python main.py web                       # Web 实时监控面板 → http://localhost:8000
 ```
+
+## Web 实时监控面板
+
+```bash
+python main.py web --port 8000 --fetch-interval 30   # 后台每30分钟自动抓取
+python main.py web --fetch-interval 0                # 仅展示, 不自动抓取
+```
+
+浏览器打开 `http://localhost:8000`：
+
+- **型号总览** — 各型号跨来源最低价、环比涨跌(红涨▲/绿跌▼)，点击查看详情
+- **各来源报价对比** — 单价/起购量/库存/供应商，带详情页链接
+- **价格走势图** — Chart.js 多来源曲线，可切 24小时/7天/30天
+- **告警流** — 超阈值价格变动实时滚动
+- 页面每 30 秒自动轮询刷新；顶栏可直接添加型号、手动触发抓取
+
+> 走势图的 Chart.js 通过 CDN 加载，浏览器需能访问 cdn.jsdelivr.net。
 
 ## 解析架构(配置化 + 多策略)
 

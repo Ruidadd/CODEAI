@@ -192,6 +192,30 @@ def cmd_watch(ctx, interval, parts):
         console.print("\n[yellow]监控已停止[/yellow]")
 
 
+@cli.command("web")
+@click.option("--host", default="0.0.0.0", show_default=True, help="监听地址")
+@click.option("--port", default=8000, show_default=True, help="端口")
+@click.option("--fetch-interval", default=30, show_default=True,
+              help="后台自动抓取间隔(分钟), 0 表示不自动抓取")
+@click.pass_context
+def cmd_web(ctx, host, port, fetch_interval):
+    """启动 Web 实时监控面板
+
+    示例:\n
+      monitor web                       # http://localhost:8000\n
+      monitor web --fetch-interval 15   # 每15分钟后台自动抓取\n
+      monitor web --fetch-interval 0    # 仅展示, 不自动抓取
+    """
+    from .webapp import run_server
+
+    print_banner()
+    console.print(
+        f"[cyan]Web 面板启动[/cyan] — http://localhost:{port}  "
+        f"后台抓取间隔 [bold]{fetch_interval}[/bold] 分钟  按 [bold]Ctrl+C[/bold] 退出"
+    )
+    run_server(host, port, ctx.obj["db"], fetch_interval)
+
+
 @cli.command("export")
 @click.argument("part_number")
 @click.option("--format", "fmt", type=click.Choice(["csv", "json"]), default="csv")

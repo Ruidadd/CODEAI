@@ -14,6 +14,7 @@ setup(
         "tenacity>=8.2.0",
         "schedule>=1.2.0",
         "python-dotenv>=1.0.0",
+        "flask>=3.0.0",
     ],
     entry_points={
         "console_scripts": [

@@ -74,7 +74,12 @@ class PriceAlert(Base):
 
 
 def get_engine(db_path: str = DB_PATH):
-    return create_engine(f"sqlite:///{db_path}", echo=False)
+    # check_same_thread=False: Web 服务多线程(请求线程+后台抓取线程)共用引擎
+    return create_engine(
+        f"sqlite:///{db_path}",
+        echo=False,
+        connect_args={"check_same_thread": False},
+    )
 
 
 def get_session(engine=None):
