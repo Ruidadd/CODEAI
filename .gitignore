@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.pyo
+*.db
+.env
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+/*.csv
+/*.json
+
+# 但保留解析 fixture 样本
+!tests/fixtures/**
