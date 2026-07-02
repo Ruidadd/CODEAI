@@ -35,6 +35,37 @@ export CODEX_MODEL=gpt-5.5-codex
 
 ## 日常用法
 
+### 方式一：一条命令的本地工作流（推荐）
+
+不用打开交互界面，终端里一条命令跑完全流程：
+
+```bash
+# 全流程：规划 → 施工 → 逐步验收 → 终验 + 提交
+./scripts/pipeline.sh "给项目加一个带单元测试的 TODO REST API"
+
+# 或者跳过规划，直接执行一份已有计划
+./scripts/pipeline.sh --plan codex-plans/20260702-slugify-trial.md
+```
+
+流程由 bash 做确定性调度，每个节点调用对应的智能体：
+
+1. **PLAN**：无头 `claude -p` 探索代码库并写计划到 `codex-plans/`；
+2. **EXECUTE**：`codex exec` 逐步施工；
+3. **VERIFY**：无头 `claude -p` 审 diff、跑验收命令，按「最后一行
+   `PASS` / `FAIL: <反馈>`」协议裁决；FAIL 时自动把反馈 resume 回
+   Codex 同一会话返工，默认最多 3 轮（`MAX_ROUNDS` 可调），超限即停，
+   留给人工接管；
+4. **ACCEPT**：终验通过后填写计划的验收记录并 `git commit`（不 push）。
+
+全程日志落盘在 `.codex-out/pipeline-*.log`。要求干净的工作区起跑
+（验收依赖 `git diff`），可用 `PIPELINE_ALLOW_DIRTY=1` 覆盖。
+可选环境变量：`CC_MODEL`（Claude 用的模型）、`CODEX_MODEL`（Codex 用的模型）。
+
+> 注意：脚本给无头 Claude 授了 `Bash` 权限（验收要跑测试、终验要
+> commit），只在你信任的本地仓库里使用。
+
+### 方式二：交互式斜杠命令
+
 在本仓库打开 Claude Code，直接用斜杠命令：
 
 ```
@@ -43,7 +74,7 @@ export CODEX_MODEL=gpt-5.5-codex
 
 Claude 会自动完成：写计划 → 逐步调用 Codex 实现 → 每步验收 → 通过后提交。
 
-也可以手动驱动单次执行：
+### 方式三：手动驱动单次执行
 
 ```bash
 # 派工：让 Codex 实现某个计划的某一步
