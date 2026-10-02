@@ -1,0 +1,12 @@
+{
+  "name": "civ-board",
+  "version": "0.1.0",
+  "private": true,
+  "description": "文明小桌：一局 20 回合的桌游版文明，微信小程序 + 网页版",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "sim": "node scripts/balance-sim.js 300",
+    "build:web": "node scripts/build-web.js",
+    "serve:web": "npx http-server web -p 8080 -c-1"
+  }
+}

@@ -1,0 +1,4 @@
+{
+  "desc": "文明小桌",
+  "rules": [{ "action": "allow", "page": "*" }]
+}

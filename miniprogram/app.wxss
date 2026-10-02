@@ -1,0 +1,41 @@
+/* 文明小桌 · 小程序全局样式 */
+page {
+  background: #f3f1ea;
+  color: #1f2429;
+  font-size: 30rpx;
+  line-height: 1.5;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+}
+.page { padding: 20rpx 24rpx; }
+.note { color: #868b90; font-size: 26rpx; margin-top: 10rpx; }
+.note.center { text-align: center; }
+.label { font-size: 24rpx; letter-spacing: 2rpx; color: #555b61; font-weight: 600; margin-bottom: 14rpx; }
+.panel { background: #fffdf8; border: 2rpx solid #d8d2c3; border-radius: 28rpx; padding: 26rpx; margin-bottom: 24rpx; }
+
+/* 按钮 */
+.btn {
+  display: flex; align-items: center; justify-content: center;
+  border: 2rpx solid #d8d2c3; background: #fffdf8; border-radius: 22rpx;
+  padding: 20rpx 30rpx; font-weight: 600; font-size: 30rpx;
+}
+.btn.primary { background: #2f7d6b; color: #fff; border-color: #2f7d6b; }
+.btn.ghost { background: transparent; }
+.btn.big { padding: 28rpx 32rpx; font-size: 34rpx; }
+.btn.small { padding: 14rpx 22rpx; font-size: 26rpx; }
+.btn.danger { color: #b23a30; }
+.btn.disabled { opacity: .5; }
+.btn-hover { opacity: .85; }
+
+/* 分段选择 */
+.seg { display: flex; gap: 10rpx; background: #ebe7dc; padding: 8rpx; border-radius: 22rpx; }
+.seg-btn { flex: 1; text-align: center; border-radius: 16rpx; padding: 16rpx 8rpx; color: #555b61; font-size: 28rpx; }
+.seg-btn.is-on { background: #fffdf8; color: #1f2429; font-weight: 600; box-shadow: 0 2rpx 8rpx rgba(20, 25, 30, .08); }
+
+/* 弹层 */
+.modal { position: fixed; left: 0; top: 0; right: 0; bottom: 0; z-index: 50; background: rgba(10, 12, 14, .5); display: flex; align-items: center; justify-content: center; padding: 32rpx; }
+.modal-card { background: #fffdf8; border-radius: 32rpx; width: 100%; max-width: 640rpx; padding: 40rpx 36rpx; max-height: 84vh; overflow-y: auto; box-shadow: 0 12rpx 36rpx rgba(20, 25, 30, .12); }
+.modal-card.center { text-align: center; }
+.m-icon { display: block; font-size: 100rpx; line-height: 1.1; }
+.m-title { font-size: 44rpx; letter-spacing: 3rpx; margin-top: 10rpx; }
+.m-text { color: #555b61; margin-top: 14rpx; font-size: 28rpx; }
+.m-actions { display: flex; flex-direction: column; gap: 16rpx; margin-top: 30rpx; }

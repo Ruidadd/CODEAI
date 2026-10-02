@@ -1,0 +1,15 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/game/game"
+  ],
+  "window": {
+    "navigationBarTitleText": "文明小桌",
+    "navigationBarBackgroundColor": "#f3f1ea",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f3f1ea",
+    "backgroundTextStyle": "dark"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

@@ -1,0 +1,1452 @@
+<title>文明小桌</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&display=swap">
+<style>
+/* 文明小桌 · 网页版样式
+   布局：手机单列（棋盘在上、卡片在下、底部固定“结束回合”）；≥860px 双列（棋盘 | 卡片） */
+:root {
+  --bg: #f3f1ea;
+  --surface: #fffdf8;
+  --surface-2: #ebe7dc;
+  --line: #d8d2c3;
+  --ink: #1f2429;
+  --ink-2: #555b61;
+  --muted: #868b90;
+  --jade: #2f7d6b;
+  --jade-soft: #d9ece5;
+  --seal: #b23a30;
+  --seal-ink: #fffaf5;
+  --gold: #c39a3c;
+  --t-grass: #d6e7ad;
+  --t-forest: #a5c98c;
+  --t-mountain: #d3ccc1;
+  --t-river: #c0ddf0;
+  --t-desert: #f0dca8;
+  --t-ocean: #93c1e1;
+  --t-ruins: #e4d3ac;
+  --t-natwonder: #e9cae6;
+  --shadow: 0 1px 2px rgba(20, 25, 30, .08), 0 6px 18px rgba(20, 25, 30, .06);
+  --font-display: 'ZCOOL XiaoWei', 'STKaiti', 'KaiTi', 'Songti SC', serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Helvetica Neue', Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15191d; --surface: #1e2429; --surface-2: #272e35; --line: #353d45;
+    --ink: #eae6dd; --ink-2: #bcb7ad; --muted: #80868d;
+    --jade: #5fb79f; --jade-soft: #22433a; --seal: #d4584c; --seal-ink: #fff6f3; --gold: #d9b35e;
+    --t-grass: #46602c; --t-forest: #2f4b2a; --t-mountain: #4d4a46; --t-river: #2a4b60;
+    --t-desert: #665529; --t-ocean: #203c55; --t-ruins: #5a4b2d; --t-natwonder: #553253;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 6px 18px rgba(0, 0, 0, .3);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15191d; --surface: #1e2429; --surface-2: #272e35; --line: #353d45;
+  --ink: #eae6dd; --ink-2: #bcb7ad; --muted: #80868d;
+  --jade: #5fb79f; --jade-soft: #22433a; --seal: #d4584c; --seal-ink: #fff6f3; --gold: #d9b35e;
+  --t-grass: #46602c; --t-forest: #2f4b2a; --t-mountain: #4d4a46; --t-river: #2a4b60;
+  --t-desert: #665529; --t-ocean: #203c55; --t-ruins: #5a4b2d; --t-natwonder: #553253;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 6px 18px rgba(0, 0, 0, .3);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 15px; line-height: 1.5;
+  -webkit-tap-highlight-color: transparent; -webkit-text-size-adjust: 100%;
+}
+button { font: inherit; color: inherit; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+#app { min-height: 100%; }
+.screen { max-width: 480px; margin: 0 auto; padding-inline: 16px; }
+.screen[hidden] { display: none !important; }
+.note { color: var(--muted); font-size: 13px; margin: 6px 0 0; }
+.note.center { text-align: center; }
+.label {
+  font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2);
+  font-weight: 600; margin-bottom: 8px;
+}
+
+/* ---------- 按钮 ---------- */
+.btn {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 12px;
+  padding: 10px 16px; cursor: pointer; font-weight: 600; transition: transform .08s ease, background .15s ease;
+}
+.btn:active { transform: scale(.98); }
+.btn:focus-visible, .seg-btn:focus-visible, .tile:focus-visible, .card:focus-visible, .tabs button:focus-visible, .civ:focus-visible {
+  outline: 3px solid var(--jade); outline-offset: 2px;
+}
+.btn.primary { background: var(--jade); color: #fff; border-color: var(--jade); }
+.btn.ghost { background: transparent; }
+.btn.big { padding: 14px 18px; font-size: 17px; }
+.btn.small { padding: 8px 12px; font-size: 13px; }
+.btn.end {
+  background: var(--seal); color: var(--seal-ink); border-color: var(--seal);
+  font-family: var(--font-display); font-size: 20px; letter-spacing: .1em; padding: 10px 22px; border-radius: 14px;
+}
+.btn[disabled] { opacity: .5; cursor: default; }
+.seg { display: flex; gap: 6px; background: var(--surface-2); padding: 4px; border-radius: 12px; }
+.seg-btn {
+  flex: 1; border: 0; background: transparent; border-radius: 9px; padding: 8px 6px; cursor: pointer; color: var(--ink-2);
+}
+.seg-btn.is-on { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); font-weight: 600; }
+
+/* ---------- 开始页 ---------- */
+.start { padding-block: 24px 40px; display: flex; flex-direction: column; gap: 16px; }
+.hero { text-align: center; padding-block: 8px 4px; }
+.hero-mark { font-size: 44px; line-height: 1; }
+.title { font-family: var(--font-display); font-size: 44px; font-weight: 400; letter-spacing: .14em; margin-top: 6px; }
+.tagline { color: var(--ink-2); margin: 6px auto 0; max-width: 26em; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 380px) { .row2 { grid-template-columns: 1fr; } }
+.civ-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.civ {
+  border: 2px solid var(--line); background: var(--surface); border-radius: 12px; padding: 10px 6px; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; min-width: 0;
+}
+.civ .ci { font-size: 28px; line-height: 1.1; }
+.civ .cn { font-family: var(--font-display); font-size: 18px; }
+.civ .cb { font-size: 11px; color: var(--muted); line-height: 1.3; }
+.civ.is-on { border-color: var(--civ); box-shadow: inset 0 0 0 1px var(--civ); background: color-mix(in srgb, var(--civ) 10%, var(--surface)); }
+.start-actions { display: flex; flex-direction: column; gap: 10px; }
+
+/* ---------- 对局页 ---------- */
+.game { padding-block: 10px 96px; display: grid; gap: 10px; }
+.topbar { display: flex; flex-direction: column; gap: 6px; }
+.round { display: flex; align-items: baseline; justify-content: space-between; }
+.round-num { font-family: var(--font-display); font-size: 22px; letter-spacing: .06em; font-variant-numeric: tabular-nums; }
+.era { color: var(--ink-2); font-size: 13px; }
+.players { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.players::-webkit-scrollbar { display: none; }
+.pchip {
+  display: inline-flex; align-items: center; gap: 5px; padding: 4px 9px 4px 6px; border-radius: 999px;
+  background: var(--surface); border: 1px solid var(--line); font-size: 13px; white-space: nowrap; flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+}
+.pchip .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--c); }
+.pchip .sc { font-family: var(--font-display); font-size: 16px; }
+.pchip.is-cur { border-color: var(--c); box-shadow: inset 0 0 0 1px var(--c); }
+.me-bar {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+}
+.res {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 6px 8px;
+  display: flex; flex-direction: column; min-width: 0;
+}
+.res .rn { font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.res .rv { font-family: var(--font-display); font-size: 22px; line-height: 1.1; font-variant-numeric: tabular-nums; display: flex; align-items: baseline; gap: 6px; }
+.res .ri { font-family: var(--font-body); font-size: 12px; color: var(--jade); font-weight: 600; }
+
+.board-wrap { background: var(--surface-2); border-radius: 14px; padding: 6px; border: 1px solid var(--line); }
+.board { display: grid; grid-template-columns: repeat(8, 1fr); gap: 3px; }
+.tile {
+  position: relative; aspect-ratio: 1; border: 0; border-radius: 7px; padding: 0; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; font-size: clamp(15px, 4.6vw, 24px); line-height: 1;
+  background: var(--t-grass); overflow: hidden;
+}
+.t-forest { background: var(--t-forest); } .t-mountain { background: var(--t-mountain); } .t-river { background: var(--t-river); }
+.t-desert { background: var(--t-desert); } .t-ocean { background: var(--t-ocean); } .t-ruins { background: var(--t-ruins); } .t-natwonder { background: var(--t-natwonder); }
+.tile .ti { position: relative; z-index: 1; }
+.tile.owned::after { content: ''; position: absolute; inset: 0; background: var(--owner); opacity: .28; }
+.tile.owned { box-shadow: inset 0 0 0 3px var(--owner); }
+.tile.cap { box-shadow: inset 0 0 0 3px var(--owner), inset 0 0 0 5px var(--surface); }
+.tile.cap .ti { font-size: 1.15em; }
+.tile.claimable { outline: 2px dashed var(--jade); outline-offset: -3px; }
+.tile.affordable { outline-style: solid; animation: breathe 1.8s ease-in-out infinite; }
+.tile .cost {
+  position: absolute; right: 2px; bottom: 2px; z-index: 2; font-size: 10px; font-weight: 700; line-height: 1.3;
+  padding: 0 4px; border-radius: 6px; background: var(--surface); color: var(--muted); border: 1px solid var(--line);
+}
+.tile.affordable .cost { background: var(--jade); color: #fff; border-color: var(--jade); }
+@keyframes breathe { 0%, 100% { outline-offset: -3px; } 50% { outline-offset: -1px; } }
+@media (prefers-reduced-motion: reduce) { .tile.affordable { animation: none; } }
+.hint { margin: 0; text-align: center; color: var(--ink-2); font-size: 13px; min-height: 1.5em; }
+
+.tabs { display: flex; gap: 4px; background: var(--surface-2); padding: 4px; border-radius: 12px; }
+.tabs button { flex: 1; border: 0; background: transparent; border-radius: 9px; padding: 8px 4px; cursor: pointer; color: var(--ink-2); }
+.tabs button.is-on { background: var(--surface); color: var(--ink); font-weight: 600; box-shadow: var(--shadow); }
+.cards { display: flex; flex-direction: column; gap: 6px; }
+.card {
+  display: grid; grid-template-columns: 34px 1fr auto; gap: 10px; align-items: center; text-align: left;
+  padding: 8px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; cursor: pointer; min-width: 0;
+}
+.card .ic { font-size: 24px; line-height: 1; text-align: center; }
+.card .nm { font-weight: 600; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.card .ef { font-size: 12px; color: var(--ink-2); }
+.card .pill {
+  font-family: var(--font-display); font-size: 16px; padding: 2px 9px; border-radius: 999px; background: var(--surface-2);
+  color: var(--ink-2); white-space: nowrap; font-variant-numeric: tabular-nums;
+}
+.card.ok { border-color: var(--jade); }
+.card.ok .pill { background: var(--jade); color: #fff; }
+.card.poor .pill { color: var(--seal); }
+.card.locked, .card.done, .card.taken { opacity: .6; cursor: default; }
+.card.done { border-style: dashed; }
+.card .tag { font-size: 11px; font-weight: 500; padding: 0 6px; border-radius: 6px; background: var(--surface-2); color: var(--muted); }
+.card .tag.era { background: var(--jade-soft); color: var(--jade); }
+.card-head { font-size: 12px; color: var(--muted); margin: 6px 0 0; letter-spacing: .08em; }
+.logrow { display: grid; grid-template-columns: 26px 1fr; gap: 8px; padding: 6px 4px; border-bottom: 1px dashed var(--line); font-size: 13px; }
+.logrow .lw { font-weight: 600; color: var(--lc, var(--ink-2)); }
+.logrow .lr { color: var(--muted); font-size: 11px; }
+.logrow.me .lw { color: var(--ink); }
+
+.actionbar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+  display: flex; align-items: center; gap: 10px; padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+  background: var(--surface); border-top: 1px solid var(--line);
+}
+.actionbar > .btn.end { margin-left: auto; }
+.actions-left { font-size: 13px; color: var(--ink-2); display: flex; gap: 4px; align-items: center; }
+.actions-left .pip { width: 10px; height: 10px; border-radius: 50%; background: var(--jade); display: inline-block; }
+.actions-left .pip.off { background: var(--line); }
+
+/* ---------- 弹层 ---------- */
+.modal {
+  position: fixed; inset: 0; z-index: 50; background: rgba(10, 12, 14, .5);
+  display: flex; align-items: center; justify-content: center; padding: 16px;
+}
+.modal[hidden] { display: none !important; }
+.modal-card {
+  background: var(--surface); color: var(--ink); border-radius: 18px; width: 100%; max-width: 420px;
+  padding: 22px 20px; max-height: 86vh; overflow: auto; box-shadow: var(--shadow);
+}
+.modal-card h2 { font-family: var(--font-display); font-size: 26px; font-weight: 400; letter-spacing: .08em; }
+.modal-card .m-icon { font-size: 54px; text-align: center; line-height: 1.1; }
+.modal-card .m-text { color: var(--ink-2); margin: 8px 0 0; }
+.modal-card .m-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+.modal-card.center { text-align: center; }
+.rank { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; text-align: left; }
+.rank .rrow {
+  display: grid; grid-template-columns: 28px 1fr auto; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 12px;
+  background: var(--surface-2); border-left: 4px solid var(--c);
+}
+.rank .rrow.win { background: var(--jade-soft); }
+.rank .rs { font-family: var(--font-display); font-size: 22px; font-variant-numeric: tabular-nums; }
+.rank .rd { font-size: 12px; color: var(--muted); }
+.help ol { padding-left: 20px; margin: 10px 0 0; display: flex; flex-direction: column; gap: 6px; }
+.help li { color: var(--ink-2); }
+.help b { color: var(--ink); }
+.help .civs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px; font-size: 13px; color: var(--ink-2); margin-top: 8px; }
+.busy { text-align: center; font-size: 15px; color: var(--ink-2); }
+
+.toast {
+  position: fixed; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 40;
+  background: var(--ink); color: var(--bg); padding: 9px 14px; border-radius: 12px; font-size: 14px; max-width: min(92vw, 420px);
+  box-shadow: var(--shadow); text-align: center;
+}
+.toast.ok { background: var(--jade); color: #fff; }
+.toast[hidden] { display: none !important; }
+
+/* ---------- 桌面双列 ---------- */
+@media (min-width: 860px) {
+  .screen.game { max-width: 980px; grid-template-columns: minmax(0, 480px) minmax(0, 1fr); gap: 20px; align-items: start; padding-block: 16px 96px; }
+  .col-board { display: grid; gap: 10px; }
+  .col-cards { display: grid; gap: 10px; position: sticky; top: env(safe-area-inset-top, 0px); }
+  .cards { max-height: calc(100vh - 170px); overflow: auto; padding-right: 2px; }
+  .tile { font-size: 24px; }
+  .actionbar { padding-inline: calc((100vw - 980px) / 2 + 16px); }
+}
+@media (max-width: 859px) {
+  .actionbar { padding-inline: 16px; }
+}
+
+</style>
+<div id="app">
+
+  <section id="start" class="screen start">
+    <header class="hero">
+      <div class="hero-mark" aria-hidden="true">🏛️</div>
+      <h1 class="title">文明小桌</h1>
+      <p class="tagline">一局二十回合的桌游版文明。点一点，建一座属于你的文明。</p>
+    </header>
+
+    <div class="panel">
+      <h2 class="label">对局方式</h2>
+      <div class="seg" id="modeSeg" role="tablist">
+        <button type="button" class="seg-btn is-on" data-v="daily">每日一局</button>
+        <button type="button" class="seg-btn" data-v="random">随机地图</button>
+        <button type="button" class="seg-btn" data-v="hotseat">多人同机</button>
+      </div>
+      <p class="note" id="modeNote">今天所有人玩的都是同一张地图，比比谁的分高。</p>
+    </div>
+
+    <div class="panel">
+      <h2 class="label">选择文明</h2>
+      <div class="civ-grid" id="civGrid"></div>
+    </div>
+
+    <div class="panel" id="oppPanel">
+      <div class="row2">
+        <div>
+          <h2 class="label">电脑对手</h2>
+          <div class="seg" id="oppSeg">
+            <button type="button" class="seg-btn" data-v="1">1 个</button>
+            <button type="button" class="seg-btn is-on" data-v="2">2 个</button>
+            <button type="button" class="seg-btn" data-v="3">3 个</button>
+          </div>
+        </div>
+        <div>
+          <h2 class="label">电脑强度</h2>
+          <div class="seg" id="diffSeg">
+            <button type="button" class="seg-btn" data-v="easy">轻松</button>
+            <button type="button" class="seg-btn is-on" data-v="normal">普通</button>
+            <button type="button" class="seg-btn" data-v="hard">困难</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="hotPanel" hidden>
+      <h2 class="label">玩家人数（轮到谁就把手机递给谁）</h2>
+      <div class="seg" id="humanSeg">
+        <button type="button" class="seg-btn is-on" data-v="2">2 人</button>
+        <button type="button" class="seg-btn" data-v="3">3 人</button>
+        <button type="button" class="seg-btn" data-v="4">4 人</button>
+      </div>
+    </div>
+
+    <div class="start-actions">
+      <button type="button" class="btn primary big" id="btnStart">开始游戏</button>
+      <button type="button" class="btn big" id="btnContinue" hidden>继续上次对局</button>
+      <button type="button" class="btn ghost" id="btnHelp">玩法说明</button>
+    </div>
+    <p class="note center" id="bestLine"></p>
+  </section>
+
+  <section id="game" class="screen game" hidden>
+    <div class="col-board">
+      <header class="topbar">
+        <div class="round">
+          <span class="round-num" id="roundText">第 1 / 20 回合</span>
+          <span class="era" id="eraText">远古时代</span>
+        </div>
+        <div class="players" id="playersStrip"></div>
+      </header>
+      <div class="me-bar" id="meBar"></div>
+      <div class="board-wrap">
+        <div class="board" id="board" aria-label="棋盘"></div>
+      </div>
+      <p class="hint" id="hint"></p>
+    </div>
+
+    <div class="col-cards">
+      <nav class="tabs" id="tabs">
+        <button type="button" data-tab="build" class="is-on">建造</button>
+        <button type="button" data-tab="tech">科技</button>
+        <button type="button" data-tab="wonder">奇观</button>
+        <button type="button" data-tab="log">动态</button>
+      </nav>
+      <div class="cards" id="cards"></div>
+    </div>
+
+    <footer class="actionbar">
+      <button type="button" class="btn ghost small" id="btnMenu">菜单</button>
+      <div class="actions-left" id="actionsLeft"></div>
+      <button type="button" class="btn end" id="btnEnd">结束回合</button>
+    </footer>
+  </section>
+
+  <div class="modal" id="modal" hidden>
+    <div class="modal-card" id="modalCard" role="dialog" aria-modal="true"></div>
+  </div>
+  <div class="toast" id="toast" hidden></div>
+</div>
+<script>
+/*
+ * 文明小桌 · 核心规则引擎
+ * ------------------------------------------------------------
+ * 零依赖、无 UI，可在微信小程序 / 浏览器 / Node 中直接运行。
+ * 游戏状态是一个纯 JSON 对象，随时可以 JSON.stringify 存档。
+ *
+ * 玩法速览：
+ *   - 8×8 棋盘，每回合先收入资源，再做任意次可负担的操作，然后结束回合
+ *   - 🌾粮食 → 扩张领土（点格子）  ⚒️生产 → 建筑 / 奇观  🔬科技 → 研究
+ *   - 🎭文化就是分数；每 3 回合翻一张事件卡；20 回合后分高者胜
+ */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) { module.exports = factory(); }
+  else { root.CivEngine = factory(); }
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+
+  // ------------------------------------------------------------
+  // 常量与数据表
+  // ------------------------------------------------------------
+  var W = 8, H = 8, MAX_ROUND = 20, EVENT_EVERY = 3;
+  var ACTIONS_PER_TURN = 3;          // 每回合最多行动次数（扩张/建造/研究/奇观各算 1 次）
+  var EXPAND_QUAD = 10;              // 扩张费 = 2 + 领土数 + 领土数²/EXPAND_QUAD
+  var START_POS = [[1, 1], [6, 6], [6, 1], [1, 6]];
+  var START_RES = { F: 3, P: 4, S: 0 };
+  var CAPITAL_YIELD = { F: 2, P: 1, S: 1 };
+  var SCORE = { tile: 1, building: 2, tech: 2, wonder: 5, era: 2 };
+  // 可重复的资源出口：粮食多了办庆典，科技点满后研究未来科技
+  var FESTIVAL = { id: 'festival', name: '庆典', icon: '🎊', cost: 5, gain: 1, effect: '消耗粮食换取文化，可重复' };
+  var FUTURE = { id: 'future', name: '未来科技', icon: '🚀', cost: 12, gain: 2, effect: '所有科技研究完后可重复研究' };
+  var DIFFICULTY = { easy: 0.8, normal: 1, hard: 1.3 };
+
+  var RES = {
+    F: { name: '粮食', icon: '🌾', use: '扩张领土' },
+    P: { name: '生产', icon: '⚒️', use: '建筑与奇观' },
+    S: { name: '科技', icon: '🔬', use: '研究' },
+    C: { name: '文化', icon: '🎭', use: '分数' }
+  };
+  var RES_KEYS = ['F', 'P', 'S', 'C'];
+
+  var TERRAINS = {
+    grass:     { name: '平原',   icon: '🌾', yields: { F: 1 } },
+    forest:    { name: '森林',   icon: '🌲', yields: { P: 1 } },
+    mountain:  { name: '山地',   icon: '⛰️', yields: { P: 1 } },
+    river:     { name: '河谷',   icon: '🏞️', yields: { S: 1 } },
+    desert:    { name: '沙漠',   icon: '🏜️', yields: { P: 1 }, costMod: -1 },
+    ocean:     { name: '海洋',   icon: '🌊', yields: { F: 1, S: 1 }, needTech: 'sailing' },
+    ruins:     { name: '遗迹',   icon: '🏺', yields: { S: 1 }, bonus: true },
+    natwonder: { name: '自然奇观', icon: '🗻', yields: { F: 1, S: 1, C: 1 } }
+  };
+  var TERRAIN_WEIGHTS = [['grass', 30], ['forest', 24], ['mountain', 14], ['river', 16], ['desert', 8]];
+
+  var CIVS = [
+    { id: 'china',  name: '华夏', icon: '🐉', color: '#c0392b', passive: 'sci',      bonus: '每回合 +1🔬，科技造价 -1' },
+    { id: 'rome',   name: '罗马', icon: '🦅', color: '#7d3c98', passive: 'expand',   bonus: '扩张所需🌾 -2' },
+    { id: 'egypt',  name: '埃及', icon: '🐫', color: '#d68910', passive: 'wonder',   bonus: '奇观造价 -4' },
+    { id: 'greece', name: '希腊', icon: '🏛️', color: '#2874a6', passive: 'culture',  bonus: '每回合 +1🎭，庆典只需 3🌾' },
+    { id: 'persia', name: '波斯', icon: '🦁', color: '#148f77', passive: 'prod',     bonus: '每回合额外 +1⚒️' },
+    { id: 'inca',   name: '印加', icon: '🦙', color: '#b9770e', passive: 'mountain', bonus: '每块山地额外 +2🌾' }
+  ];
+
+  var ERAS = ['远古时代', '古典时代', '中世纪', '文艺复兴', '工业时代'];
+  var TECHS = [
+    { id: 'agri',       era: 0, name: '农业',   icon: '🌱', cost: 5,  effect: '每块平原 +1🌾' },
+    { id: 'mining',     era: 0, name: '采矿',   icon: '⛏️', cost: 5,  effect: '每块山地 +1⚒️' },
+    { id: 'writing',    era: 0, name: '文字',   icon: '📜', cost: 6,  effect: '解锁 图书馆、亚历山大图书馆' },
+    { id: 'currency',   era: 1, name: '货币',   icon: '🪙', cost: 7,  effect: '解锁 市场' },
+    { id: 'masonry',    era: 1, name: '建筑学', icon: '🧱', cost: 7,  effect: '解锁 城墙、长城' },
+    { id: 'philosophy', era: 1, name: '哲学',   icon: '🤔', cost: 8,  effect: '解锁 神庙' },
+    { id: 'sailing',    era: 2, name: '航海术', icon: '⛵', cost: 10, effect: '每块河谷 +1🔬，可扩张到海洋，解锁 港口、灯塔' },
+    { id: 'feudalism',  era: 2, name: '封建制', icon: '🏰', cost: 10,  effect: '每块森林 +1⚒️，解锁 庄园、紫禁城' },
+    { id: 'theology',   era: 2, name: '神学',   icon: '📿', cost: 11,  effect: '解锁 修道院、大教堂' },
+    { id: 'printing',   era: 3, name: '印刷术', icon: '📚', cost: 13,  effect: '解锁 大学' },
+    { id: 'gunpowder',  era: 3, name: '火药',   icon: '💥', cost: 13,  effect: '解锁 兵工厂' },
+    { id: 'banking',    era: 3, name: '银行业', icon: '🏦', cost: 14, effect: '解锁 银行' }
+  ];
+  var TECHS_PER_ERA = 3;
+
+  var BUILDINGS = [
+    { id: 'granary',    name: '粮仓',   icon: '🏚️', cost: 5,  yields: { F: 2 } },
+    { id: 'workshop',   name: '作坊',   icon: '🔨', cost: 6,  yields: { P: 2 } },
+    { id: 'shrine',     name: '祭坛',   icon: '🕯️', cost: 5,  yields: { C: 1 } },
+    { id: 'library',    name: '图书馆', icon: '📖', cost: 8,  yields: { S: 2 }, tech: 'writing' },
+    { id: 'market',     name: '市场',   icon: '🏪', cost: 9,  yields: { F: 1, P: 1, S: 1 }, tech: 'currency' },
+    { id: 'walls',      name: '城墙',   icon: '🧱', cost: 6,  yields: {}, tech: 'masonry', protect: true },
+    { id: 'temple',     name: '神庙',   icon: '⛩️', cost: 9,  yields: { C: 2 }, tech: 'philosophy' },
+    { id: 'harbor',     name: '港口',   icon: '⚓', cost: 9,  yields: { F: 1, S: 1 }, tech: 'sailing' },
+    { id: 'manor',      name: '庄园',   icon: '🏡', cost: 10, yields: { F: 2 }, tech: 'feudalism' },
+    { id: 'monastery',  name: '修道院', icon: '🛕', cost: 10, yields: { S: 1, C: 1 }, tech: 'theology' },
+    { id: 'university', name: '大学',   icon: '🎓', cost: 12, yields: { S: 2 }, tech: 'printing' },
+    { id: 'armory',     name: '兵工厂', icon: '⚔️', cost: 12, yields: { P: 2 }, tech: 'gunpowder' },
+    { id: 'bank',       name: '银行',   icon: '💰', cost: 13, yields: { F: 2, P: 1 }, tech: 'banking' }
+  ];
+
+  var WONDERS = [
+    { id: 'stonehenge', name: '巨石阵',       icon: '🪨', cost: 14, yields: { C: 2 } },
+    { id: 'gardens',    name: '空中花园',     icon: '🌺', cost: 18, yields: { F: 3 }, tech: 'agri' },
+    { id: 'pyramids',   name: '金字塔',       icon: '🔺', cost: 18, yields: { P: 3 }, tech: 'mining' },
+    { id: 'alexandria', name: '亚历山大图书馆', icon: '🏛️', cost: 18, yields: { S: 3 }, tech: 'writing' },
+    { id: 'greatwall',  name: '长城',         icon: '🏯', cost: 22, yields: { C: 2 }, tech: 'masonry', protect: true },
+    { id: 'lighthouse', name: '灯塔',         icon: '🗼', cost: 22, yields: { F: 2, S: 2 }, tech: 'sailing' },
+    { id: 'forbidden',  name: '紫禁城',       icon: '🏮', cost: 26, yields: { F: 2, P: 2, S: 2 }, tech: 'feudalism' },
+    { id: 'notredame',  name: '大教堂',       icon: '⛪', cost: 26, yields: { C: 3 }, tech: 'theology' }
+  ];
+
+  var EVENTS = [
+    { id: 'harvest',    name: '丰收',     icon: '🌾', text: '风调雨顺，所有文明 +4🌾' },
+    { id: 'discovery',  name: '灵感迸发', icon: '💡', text: '学者辈出，所有文明 +3🔬' },
+    { id: 'boom',       name: '百业兴旺', icon: '🏗️', text: '工匠云集，所有文明 +3⚒️' },
+    { id: 'barbarians', name: '蛮族来袭', icon: '🪓', text: '没有城墙或长城的文明 -3🌾 -3⚒️' },
+    { id: 'plague',     name: '瘟疫',     icon: '🦠', text: '疾病蔓延，所有文明 -3🌾' },
+    { id: 'festival',   name: '文化节',   icon: '🎉', text: '载歌载舞，所有文明 +2🎭' },
+    { id: 'quake',      name: '地震',     icon: '🌋', text: '房屋受损，所有文明 -2⚒️' },
+    { id: 'golden',     name: '盛世',     icon: '☀️', text: '国泰民安，所有文明 +2🌾 +2⚒️ +2🔬' }
+  ];
+
+  // ------------------------------------------------------------
+  // 小工具
+  // ------------------------------------------------------------
+  function byId(list, id) {
+    for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i];
+    return null;
+  }
+  function has(arr, id) { return arr.indexOf(id) >= 0; }
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function yieldText(y) {
+    var parts = [];
+    for (var i = 0; i < RES_KEYS.length; i++) {
+      var k = RES_KEYS[i];
+      if (y[k]) parts.push('+' + y[k] + RES[k].icon);
+    }
+    return parts.join(' ');
+  }
+  function addYields(target, y, mult) {
+    mult = mult || 1;
+    for (var i = 0; i < RES_KEYS.length; i++) {
+      var k = RES_KEYS[i];
+      if (y[k]) target[k] += y[k] * mult;
+    }
+  }
+
+  // 可序列化的随机数（mulberry32），状态存在 game.rng 里
+  function rand(game) {
+    var t = (game.rng = (game.rng + 0x6D2B79F5) | 0);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  }
+  function randInt(game, n) { return Math.floor(rand(game) * n); }
+  function shuffle(game, arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = randInt(game, i + 1), t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function weightedPick(game, pairs) {
+    var total = 0, i;
+    for (i = 0; i < pairs.length; i++) total += pairs[i][1];
+    var r = rand(game) * total;
+    for (i = 0; i < pairs.length; i++) {
+      r -= pairs[i][1];
+      if (r < 0) return pairs[i][0];
+    }
+    return pairs[pairs.length - 1][0];
+  }
+
+  function idxOf(x, y) { return y * W + x; }
+  function neighbors(idx) {
+    var x = idx % W, y = Math.floor(idx / W), out = [];
+    if (x > 0) out.push(idx - 1);
+    if (x < W - 1) out.push(idx + 1);
+    if (y > 0) out.push(idx - W);
+    if (y < H - 1) out.push(idx + W);
+    return out;
+  }
+
+  function log(game, pi, text) {
+    game.log.push({ r: game.round, p: pi, t: text });
+    if (game.log.length > 60) game.log.splice(0, game.log.length - 60);
+  }
+
+  // ------------------------------------------------------------
+  // 地图生成
+  // ------------------------------------------------------------
+  function genTiles(game) {
+    var tiles = [], i;
+    for (i = 0; i < W * H; i++) tiles.push({ t: weightedPick(game, TERRAIN_WEIGHTS), o: -1, cap: false });
+
+    // 出生点及其四邻保留为陆地，保证每个文明开局都有地可扩
+    var reserved = {};
+    for (i = 0; i < game.players.length; i++) {
+      var s = idxOf(START_POS[i][0], START_POS[i][1]);
+      reserved[s] = true;
+      var nb = neighbors(s);
+      for (var k = 0; k < nb.length; k++) reserved[nb[k]] = true;
+    }
+    function freeTile() {
+      for (var tries = 0; tries < 200; tries++) {
+        var idx = randInt(game, W * H);
+        if (!reserved[idx] && tiles[idx].t !== 'ocean') return idx;
+      }
+      return -1;
+    }
+
+    // 1~2 片海洋
+    var blobs = 1 + (rand(game) < 0.5 ? 1 : 0);
+    for (var b = 0; b < blobs; b++) {
+      var seed = freeTile();
+      if (seed < 0) break;
+      var target = 3 + randInt(game, 3), count = 0, queue = [seed];
+      while (queue.length && count < target) {
+        var cur = queue.shift();
+        if (reserved[cur] || tiles[cur].t === 'ocean') continue;
+        tiles[cur].t = 'ocean'; count++;
+        var ns = shuffle(game, neighbors(cur));
+        for (var q = 0; q < ns.length; q++) queue.push(ns[q]);
+      }
+    }
+    // 3 处遗迹、1 处自然奇观
+    for (i = 0; i < 3; i++) { var r = freeTile(); if (r >= 0) { tiles[r].t = 'ruins'; reserved[r] = true; } }
+    var nw = freeTile();
+    if (nw >= 0) { tiles[nw].t = 'natwonder'; reserved[nw] = true; }
+
+    // 首都
+    for (i = 0; i < game.players.length; i++) {
+      var c = idxOf(START_POS[i][0], START_POS[i][1]);
+      tiles[c].t = 'grass'; tiles[c].o = i; tiles[c].cap = true;
+    }
+    game.tiles = tiles;
+  }
+
+  // ------------------------------------------------------------
+  // 对局创建 / 回合推进
+  // ------------------------------------------------------------
+  function dailySeed(date) {
+    var d = date || new Date();
+    return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+  }
+
+  function createGame(opts) {
+    opts = opts || {};
+    var seed = (opts.seed === undefined || opts.seed === null) ? (Date.now() % 2147483647) : opts.seed;
+    seed = (Number(seed) >>> 0) || 1;
+    var game = {
+      v: 1, seed: seed, rng: seed, mode: opts.mode || 'random',
+      difficulty: DIFFICULTY[opts.difficulty] ? opts.difficulty : 'normal',
+      w: W, h: H, round: 1, maxRound: opts.maxRound || MAX_ROUND, cur: 0, phase: 'playing', turnNo: 0,
+      tiles: [], players: [], wondersBuilt: {}, eventDeck: [], pendingEvent: null, lastEventRound: 0,
+      log: [], winner: -1
+    };
+
+    var specs = (opts.players && opts.players.length) ? opts.players.slice(0, 4)
+      : [{ civ: 'china', isHuman: true }, { civ: 'rome', isHuman: false }];
+    var used = {};
+    specs.forEach(function (s) { if (s.civ && byId(CIVS, s.civ) && !used[s.civ]) { used[s.civ] = true; } else { s.civ = null; } });
+    specs.forEach(function (s) {
+      if (!s.civ) {
+        var pool = CIVS.filter(function (c) { return !used[c.id]; });
+        var pick = pool[randInt(game, pool.length)];
+        s.civ = pick.id; used[pick.id] = true;
+      }
+    });
+    game.players = specs.map(function (s) {
+      var civ = byId(CIVS, s.civ);
+      return {
+        civ: civ.id, name: s.name || civ.name, isHuman: !!s.isHuman,
+        res: clone(START_RES), culture: 0, techs: [], buildings: [], wonders: [],
+        income: { F: 0, P: 0, S: 0, C: 0 }
+      };
+    });
+    genTiles(game);
+    game.eventDeck = shuffle(game, EVENTS.map(function (e) { return e.id; }));
+    log(game, -1, '新的文明在这片土地上诞生了');
+    startTurn(game);
+    runAI(game);
+    return game;
+  }
+
+  function startTurn(game) {
+    game.turnNo++;
+    var p = game.players[game.cur];
+    if (game.cur === 0 && game.round % EVENT_EVERY === 0 && game.lastEventRound !== game.round) drawEvent(game);
+    var inc = computeIncome(game, game.cur);
+    p.res.F += inc.F; p.res.P += inc.P; p.res.S += inc.S; p.culture += inc.C;
+    p.income = inc;
+    p.actions = 0;
+  }
+  function actionsLeft(game) { return ACTIONS_PER_TURN - (game.players[game.cur].actions || 0); }
+
+  function advance(game) {
+    var n = game.players.length;
+    game.cur = (game.cur + 1) % n;
+    if (game.cur === 0) game.round++;
+    if (game.round > game.maxRound) { finish(game); return; }
+    startTurn(game);
+  }
+
+  function runAI(game) {
+    var guard = 0;
+    while (game.phase === 'playing' && !game.players[game.cur].isHuman && guard++ < 500) {
+      aiTurn(game);
+      advance(game);
+    }
+  }
+
+  function endTurn(game) {
+    if (game.phase !== 'playing') return game;
+    advance(game);
+    runAI(game);
+    return game;
+  }
+
+  function finish(game) {
+    game.phase = 'over';
+    game.round = game.maxRound;
+    var best = -1, bestScore = -1;
+    for (var i = 0; i < game.players.length; i++) {
+      var s = computeScore(game, i);
+      if (s > bestScore) { bestScore = s; best = i; }
+    }
+    game.winner = best;
+    log(game, -1, '时代落幕，' + game.players[best].name + ' 以 ' + bestScore + ' 分成为最伟大的文明');
+  }
+
+  // ------------------------------------------------------------
+  // 事件
+  // ------------------------------------------------------------
+  function isProtected(p) { return has(p.buildings, 'walls') || has(p.wonders, 'greatwall'); }
+
+  function applyEvent(id, p) {
+    var r = p.res;
+    switch (id) {
+      case 'harvest': r.F += 4; break;
+      case 'discovery': r.S += 3; break;
+      case 'boom': r.P += 3; break;
+      case 'barbarians': if (!isProtected(p)) { r.F = Math.max(0, r.F - 3); r.P = Math.max(0, r.P - 3); } break;
+      case 'plague': r.F = Math.max(0, r.F - 3); break;
+      case 'festival': p.culture += 2; break;
+      case 'quake': r.P = Math.max(0, r.P - 2); break;
+      case 'golden': r.F += 2; r.P += 2; r.S += 2; break;
+    }
+  }
+
+  function drawEvent(game) {
+    if (!game.eventDeck.length) game.eventDeck = shuffle(game, EVENTS.map(function (e) { return e.id; }));
+    var id = game.eventDeck.shift(), ev = byId(EVENTS, id);
+    for (var i = 0; i < game.players.length; i++) applyEvent(id, game.players[i]);
+    game.pendingEvent = { id: id, round: game.round };
+    game.lastEventRound = game.round;
+    log(game, -1, '事件「' + ev.name + '」' + ev.text);
+  }
+
+  function ackEvent(game) { game.pendingEvent = null; return game; }
+
+  // ------------------------------------------------------------
+  // 收入 / 花费 / 分数
+  // ------------------------------------------------------------
+  function eraOf(p) { return Math.min(ERAS.length - 1, Math.floor(p.techs.length / TECHS_PER_ERA)); }
+  function countTiles(game, pi) {
+    var n = 0;
+    for (var i = 0; i < game.tiles.length; i++) if (game.tiles[i].o === pi) n++;
+    return n;
+  }
+
+  function tileYield(game, pi, tile) {
+    var p = game.players[pi], civ = byId(CIVS, p.civ), y = { F: 0, P: 0, S: 0, C: 0 };
+    if (tile.cap) { addYields(y, CAPITAL_YIELD); return y; }
+    addYields(y, TERRAINS[tile.t].yields);
+    if (tile.t === 'grass' && has(p.techs, 'agri')) y.F += 1;
+    if (tile.t === 'forest' && has(p.techs, 'feudalism')) y.P += 1;
+    if (tile.t === 'river' && has(p.techs, 'sailing')) y.S += 1;
+    if (tile.t === 'mountain') {
+      if (has(p.techs, 'mining')) y.P += 1;
+      if (civ.passive === 'mountain') y.F += 2;
+    }
+    return y;
+  }
+
+  function computeIncome(game, pi) {
+    var p = game.players[pi], civ = byId(CIVS, p.civ), inc = { F: 0, P: 0, S: 0, C: 0 }, i;
+    for (i = 0; i < game.tiles.length; i++) if (game.tiles[i].o === pi) addYields(inc, tileYield(game, pi, game.tiles[i]));
+    for (i = 0; i < p.buildings.length; i++) addYields(inc, byId(BUILDINGS, p.buildings[i]).yields);
+    for (i = 0; i < p.wonders.length; i++) addYields(inc, byId(WONDERS, p.wonders[i]).yields);
+    if (civ.passive === 'sci') inc.S += 1;
+    if (civ.passive === 'prod') inc.P += 1;
+    if (civ.passive === 'culture') inc.C += 1;
+    if (!p.isHuman) {
+      var f = DIFFICULTY[game.difficulty] || 1;
+      inc.F = Math.round(inc.F * f); inc.P = Math.round(inc.P * f); inc.S = Math.round(inc.S * f);
+    }
+    return inc;
+  }
+
+  function expandCost(game, pi, idx) {
+    var p = game.players[pi], civ = byId(CIVS, p.civ);
+    var n = countTiles(game, pi);
+    var cost = 2 + n + Math.floor(n * n / EXPAND_QUAD);
+    cost += TERRAINS[game.tiles[idx].t].costMod || 0;
+    if (civ.passive === 'expand') cost -= 2;
+    return Math.max(1, cost);
+  }
+
+  function buildCost(game, pi, b) { return b.cost + game.players[pi].buildings.length; }
+  function techCost(game, pi, t) {
+    var p = game.players[pi];
+    return Math.max(1, t.cost + p.techs.length - (byId(CIVS, p.civ).passive === 'sci' ? 1 : 0));
+  }
+  function festivalCost(game, pi) { return FESTIVAL.cost - (byId(CIVS, game.players[pi].civ).passive === 'culture' ? 2 : 0); }
+
+  function wonderCost(game, pi, w) {
+    var civ = byId(CIVS, game.players[pi].civ);
+    return Math.max(1, w.cost - (civ.passive === 'wonder' ? 4 : 0));
+  }
+
+  function isClaimable(game, pi, idx) {
+    var tile = game.tiles[idx];
+    if (tile.o !== -1) return false;
+    var need = TERRAINS[tile.t].needTech;
+    if (need && !has(game.players[pi].techs, need)) return false;
+    var nb = neighbors(idx);
+    for (var i = 0; i < nb.length; i++) if (game.tiles[nb[i]].o === pi) return true;
+    return false;
+  }
+
+  function computeScore(game, pi) {
+    var p = game.players[pi];
+    return countTiles(game, pi) * SCORE.tile + p.buildings.length * SCORE.building +
+      p.techs.length * SCORE.tech + p.wonders.length * SCORE.wonder + p.culture;
+  }
+
+  // ------------------------------------------------------------
+  // 合法操作与执行
+  // ------------------------------------------------------------
+  function getLegalActions(game) {
+    var acts = [];
+    if (game.phase !== 'playing' || actionsLeft(game) <= 0) return acts;
+    var pi = game.cur, p = game.players[pi], i, era = eraOf(p);
+    for (i = 0; i < game.tiles.length; i++) {
+      if (!isClaimable(game, pi, i)) continue;
+      var c = expandCost(game, pi, i);
+      if (p.res.F >= c) acts.push({ type: 'expand', idx: i, cost: c });
+    }
+    for (i = 0; i < BUILDINGS.length; i++) {
+      var b = BUILDINGS[i];
+      if (has(p.buildings, b.id)) continue;
+      if (b.tech && !has(p.techs, b.tech)) continue;
+      var bc = buildCost(game, pi, b);
+      if (p.res.P >= bc) acts.push({ type: 'build', id: b.id, cost: bc });
+    }
+    for (i = 0; i < WONDERS.length; i++) {
+      var w = WONDERS[i];
+      if (game.wondersBuilt[w.id] !== undefined) continue;
+      if (w.tech && !has(p.techs, w.tech)) continue;
+      var wc = wonderCost(game, pi, w);
+      if (p.res.P >= wc) acts.push({ type: 'wonder', id: w.id, cost: wc });
+    }
+    for (i = 0; i < TECHS.length; i++) {
+      var t = TECHS[i];
+      if (has(p.techs, t.id) || t.era !== era) continue;
+      var tc = techCost(game, pi, t);
+      if (p.res.S >= tc) acts.push({ type: 'research', id: t.id, cost: tc });
+    }
+    var fc = festivalCost(game, pi);
+    if (p.res.F >= fc) acts.push({ type: 'festival', id: FESTIVAL.id, cost: fc });
+    if (p.techs.length >= TECHS.length && p.res.S >= FUTURE.cost) acts.push({ type: 'future', id: FUTURE.id, cost: FUTURE.cost });
+    return acts;
+  }
+
+  function lootRuins(game, pi) {
+    var p = game.players[pi], roll = randInt(game, 4), text;
+    if (roll === 0) { p.res.F += 5; text = '+5🌾'; }
+    else if (roll === 1) { p.res.P += 5; text = '+5⚒️'; }
+    else if (roll === 2) { p.res.S += 5; text = '+5🔬'; }
+    else { p.culture += 3; text = '+3🎭'; }
+    return text;
+  }
+
+  function applyAction(game, action) {
+    if (game.phase !== 'playing') return { ok: false, msg: '对局已结束' };
+    if (!action) return { ok: false, msg: '无效操作' };
+    if (action.type === 'end') { endTurn(game); return { ok: true }; }
+    var pi = game.cur, p = game.players[pi], legal = getLegalActions(game), found = null;
+    for (var i = 0; i < legal.length; i++) {
+      var a = legal[i];
+      if (a.type !== action.type) continue;
+      if (a.type === 'expand' ? a.idx === action.idx : a.id === action.id) { found = a; break; }
+    }
+    if (!found) return { ok: false, msg: explainIllegal(game, action) };
+
+    p.actions = (p.actions || 0) + 1;
+    var msg = '';
+    if (found.type === 'expand') {
+      var tile = game.tiles[found.idx];
+      p.res.F -= found.cost; tile.o = pi;
+      msg = '占领了' + TERRAINS[tile.t].name;
+      if (tile.t === 'ruins' && !tile.looted) { tile.looted = true; msg += '，在遗迹中发现 ' + lootRuins(game, pi); }
+      if (tile.t === 'natwonder') msg += '，壮丽的景色让人心旷神怡';
+    } else if (found.type === 'build') {
+      p.res.P -= found.cost; p.buildings.push(found.id);
+      msg = '建造了' + byId(BUILDINGS, found.id).name;
+    } else if (found.type === 'wonder') {
+      p.res.P -= found.cost; p.wonders.push(found.id); game.wondersBuilt[found.id] = pi;
+      msg = '建成奇观「' + byId(WONDERS, found.id).name + '」！';
+    } else if (found.type === 'research') {
+      var before = eraOf(p);
+      p.res.S -= found.cost; p.techs.push(found.id);
+      msg = '研究了' + byId(TECHS, found.id).name;
+      var after = eraOf(p);
+      if (after > before) { p.culture += SCORE.era; msg += '，迈入' + ERAS[after] + '（+' + SCORE.era + '🎭）'; }
+    } else if (found.type === 'festival') {
+      p.res.F -= found.cost; p.culture += FESTIVAL.gain; p.festivals = (p.festivals || 0) + 1;
+      msg = '举办了庆典（+' + FESTIVAL.gain + '🎭）';
+    } else if (found.type === 'future') {
+      p.res.S -= found.cost; p.culture += FUTURE.gain; p.futureTechs = (p.futureTechs || 0) + 1;
+      msg = '研究了未来科技（+' + FUTURE.gain + '🎭）';
+    }
+    log(game, pi, msg);
+    return { ok: true, msg: msg };
+  }
+
+  function explainIllegal(game, action) {
+    var pi = game.cur, p = game.players[pi];
+    if (actionsLeft(game) <= 0) return '本回合的 ' + ACTIONS_PER_TURN + ' 次行动已用完，请结束回合';
+    if (action.type === 'expand') {
+      var tile = game.tiles[action.idx];
+      if (!tile) return '无效格子';
+      if (tile.o === pi) return '这已经是你的领土';
+      if (tile.o !== -1) return '这是 ' + game.players[tile.o].name + ' 的领土';
+      if (TERRAINS[tile.t].needTech && !has(p.techs, TERRAINS[tile.t].needTech)) return '需要先研究「航海术」才能占领海洋';
+      if (!isClaimable(game, pi, action.idx)) return '只能占领与自己领土相邻的格子';
+      return '粮食不足，需要 ' + expandCost(game, pi, action.idx) + '🌾';
+    }
+    if (action.type === 'build') {
+      var b = byId(BUILDINGS, action.id);
+      if (!b) return '无效建筑';
+      if (has(p.buildings, b.id)) return '已经建造过了';
+      if (b.tech && !has(p.techs, b.tech)) return '需要先研究「' + byId(TECHS, b.tech).name + '」';
+      return '生产不足，需要 ' + buildCost(game, pi, b) + '⚒️';
+    }
+    if (action.type === 'wonder') {
+      var w = byId(WONDERS, action.id);
+      if (!w) return '无效奇观';
+      if (game.wondersBuilt[w.id] !== undefined) return '已被 ' + game.players[game.wondersBuilt[w.id]].name + ' 抢先建成';
+      if (w.tech && !has(p.techs, w.tech)) return '需要先研究「' + byId(TECHS, w.tech).name + '」';
+      return '生产不足，需要 ' + wonderCost(game, pi, w) + '⚒️';
+    }
+    if (action.type === 'research') {
+      var t = byId(TECHS, action.id);
+      if (!t) return '无效科技';
+      if (has(p.techs, t.id)) return '已经研究过了';
+      if (t.era !== eraOf(p)) return t.era > eraOf(p) ? '先研究完本时代的科技' : '已经研究过了';
+      return '科技不足，需要 ' + techCost(game, pi, t) + '🔬';
+    }
+    if (action.type === 'festival') return '粮食不足，需要 ' + festivalCost(game, pi) + '🌾';
+    if (action.type === 'future') return p.techs.length < TECHS.length ? '先研究完全部科技' : '科技不足，需要 ' + FUTURE.cost + '🔬';
+    return '无效操作';
+  }
+
+  // ------------------------------------------------------------
+  // 电脑玩家（简单贪心，带一点随机）
+  // ------------------------------------------------------------
+  var AI_WEIGHT = { F: 1, P: 1.2, S: 1.3, C: 1.4 };
+
+  function tileValue(game, pi, idx) {
+    var tile = game.tiles[idx], y = tileYield(game, pi, tile), v = 0, k;
+    for (k in AI_WEIGHT) v += (y[k] || 0) * AI_WEIGHT[k];
+    if (tile.t === 'ruins' && !tile.looted) v += 3;
+    if (tile.t === 'natwonder') v += 4;
+    var nb = neighbors(idx);
+    for (var i = 0; i < nb.length; i++) if (game.tiles[nb[i]].o === -1 && game.tiles[nb[i]].t !== 'ocean') v += 0.3;
+    return v;
+  }
+
+  function buildValue(game, pi, id) {
+    var b = byId(BUILDINGS, id), v = 0, k;
+    for (k in AI_WEIGHT) v += (b.yields[k] || 0) * AI_WEIGHT[k];
+    if (b.protect) v += 1;
+    return v / buildCost(game, pi, b) * 10;
+  }
+
+  function pickBest(list, keyFn) {
+    var best = null, bestV = -Infinity;
+    for (var i = 0; i < list.length; i++) {
+      var v = keyFn(list[i]);
+      if (v > bestV) { bestV = v; best = list[i]; }
+    }
+    return best;
+  }
+
+  function chooseAiAction(game, acts) {
+    var pi = game.cur, p = game.players[pi], groups = { expand: [], build: [], wonder: [], research: [], festival: [], future: [] }, i;
+    for (i = 0; i < acts.length; i++) groups[acts[i].type].push(acts[i]);
+    if (groups.wonder.length) return pickBest(groups.wonder, function (a) { return a.cost; });
+    if (groups.future.length) return groups.future[0];
+    var order = game.round <= 8 ? ['expand', 'build', 'research'] : ['research', 'build', 'expand'];
+    if (rand(game) < 0.25) { var t = order[0]; order[0] = order[1]; order[1] = t; }
+    for (i = 0; i < order.length; i++) {
+      var g = groups[order[i]];
+      if (!g.length) continue;
+      if (order[i] === 'expand') return pickBest(g, function (a) { return tileValue(game, pi, a.idx) + rand(game) * 0.5; });
+      if (order[i] === 'build') return pickBest(g, function (a) { return buildValue(game, pi, a.id); });
+      return pickBest(g, function (a) { return -a.cost; });
+    }
+    // 扩张不动、粮食又堆得太多时，办庆典换文化
+    if (groups.festival.length && !groups.expand.length && p.res.F >= 12) return groups.festival[0];
+    return null;
+  }
+
+  function aiTurn(game) {
+    for (var guard = 0; guard < 12; guard++) {
+      var acts = getLegalActions(game);
+      if (!acts.length) break;
+      var a = chooseAiAction(game, acts);
+      if (!a) break;
+      applyAction(game, a);
+    }
+  }
+
+  // ------------------------------------------------------------
+  // 视图模型：UI 只需照着渲染，不用懂规则
+  // ------------------------------------------------------------
+  function playerView(game, i) {
+    var p = game.players[i], civ = byId(CIVS, p.civ);
+    return {
+      idx: i, name: p.name, civName: civ.name, icon: civ.icon, color: civ.color, isHuman: p.isHuman,
+      score: computeScore(game, i), tiles: countTiles(game, i), era: eraOf(p), eraName: ERAS[eraOf(p)],
+      techs: p.techs.length, buildings: p.buildings.length,
+      wonders: p.wonders.map(function (id) { var w = byId(WONDERS, id); return w.icon + w.name; }),
+      isCur: i === game.cur
+    };
+  }
+
+  function getView(game) {
+    var pi = game.cur, p = game.players[pi], civ = byId(CIVS, p.civ);
+    var humanTurn = game.phase === 'playing' && p.isHuman;
+    var legal = humanTurn ? getLegalActions(game) : [];
+    var legalExpand = {}, legalIds = {}, i;
+    for (i = 0; i < legal.length; i++) {
+      if (legal[i].type === 'expand') legalExpand[legal[i].idx] = legal[i].cost;
+      else legalIds[legal[i].type + ':' + legal[i].id] = true;
+    }
+
+    var tiles = [];
+    for (i = 0; i < game.tiles.length; i++) {
+      var t = game.tiles[i], terr = TERRAINS[t.t], owner = t.o >= 0 ? byId(CIVS, game.players[t.o].civ) : null;
+      var claimable = humanTurn && isClaimable(game, pi, i);
+      tiles.push({
+        idx: i, x: i % W, y: Math.floor(i / W), terrain: t.t, name: t.cap ? '首都' : terr.name,
+        icon: t.cap ? owner.icon : terr.icon, owner: t.o, color: owner ? owner.color : '',
+        isCap: t.cap, looted: !!t.looted,
+        claimable: claimable, affordable: legalExpand[i] !== undefined,
+        cost: claimable ? expandCost(game, pi, i) : 0,
+        yieldText: yieldText(t.o >= 0 ? tileYield(game, t.o, t) : (t.cap ? CAPITAL_YIELD : terr.yields))
+      });
+    }
+
+    var buildings = BUILDINGS.map(function (b) {
+      var state, lockText = '';
+      if (has(p.buildings, b.id)) state = 'done';
+      else if (b.tech && !has(p.techs, b.tech)) { state = 'locked'; lockText = '需要 ' + byId(TECHS, b.tech).name; }
+      else state = legalIds['build:' + b.id] ? 'ok' : 'poor';
+      var cost = buildCost(game, pi, b);
+      return { id: b.id, name: b.name, icon: b.icon, cost: cost, costText: cost + '⚒️', state: state, lockText: lockText,
+        effect: (yieldText(b.yields) || '') + (b.protect ? (yieldText(b.yields) ? ' · ' : '') + '免疫蛮族' : '') };
+    });
+    var fcost = festivalCost(game, pi);
+    buildings.push({ id: FESTIVAL.id, name: FESTIVAL.name, icon: FESTIVAL.icon, cost: fcost, costText: fcost + '🌾',
+      state: legalIds['festival:' + FESTIVAL.id] ? 'ok' : 'poor', lockText: '', repeat: true, effect: '+' + FESTIVAL.gain + '🎭 · ' + FESTIVAL.effect });
+    var wonders = WONDERS.map(function (w) {
+      var state, lockText = '', builtBy = game.wondersBuilt[w.id], cost = wonderCost(game, pi, w);
+      if (builtBy !== undefined) { state = builtBy === pi ? 'done' : 'taken'; lockText = game.players[builtBy].name + ' 已建成'; }
+      else if (w.tech && !has(p.techs, w.tech)) { state = 'locked'; lockText = '需要 ' + byId(TECHS, w.tech).name; }
+      else state = legalIds['wonder:' + w.id] ? 'ok' : 'poor';
+      return { id: w.id, name: w.name, icon: w.icon, cost: cost, costText: cost + '⚒️', state: state, lockText: lockText,
+        builtBy: builtBy === undefined ? -1 : builtBy,
+        effect: yieldText(w.yields) + (w.protect ? ' · 免疫蛮族' : '') + ' · +' + SCORE.wonder + '分' };
+    });
+    var era = eraOf(p);
+    var techs = TECHS.map(function (t) {
+      var state, lockText = '';
+      if (has(p.techs, t.id)) state = 'done';
+      else if (t.era > era) { state = 'locked'; lockText = ERAS[t.era]; }
+      else state = legalIds['research:' + t.id] ? 'ok' : 'poor';
+      var cost = techCost(game, pi, t);
+      return { id: t.id, name: t.name, icon: t.icon, cost: cost, costText: cost + '🔬', state: state, lockText: lockText,
+        effect: t.effect, era: t.era, eraName: ERAS[t.era] };
+    });
+
+    if (p.techs.length >= TECHS.length) {
+      techs.push({ id: FUTURE.id, name: FUTURE.name, icon: FUTURE.icon, cost: FUTURE.cost, costText: FUTURE.cost + '🔬',
+        state: legalIds['future:' + FUTURE.id] ? 'ok' : 'poor', lockText: '', repeat: true, effect: '+' + FUTURE.gain + '🎭 · ' + FUTURE.effect, era: 4, eraName: ERAS[4] });
+    }
+    var claimableCount = 0, affordableClaim = 0;
+    for (i = 0; i < tiles.length; i++) { if (tiles[i].claimable) claimableCount++; if (tiles[i].affordable) affordableClaim++; }
+    var canDoCard = legal.some(function (a) { return a.type !== 'expand' && a.type !== 'festival'; });
+    var hint;
+    if (game.phase === 'over') hint = '对局结束';
+    else if (!humanTurn) hint = '其他文明行动中…';
+    else if (actionsLeft(game) <= 0) hint = '本回合行动已用完，点「结束回合」';
+    else if (affordableClaim > 0 && canDoCard) hint = '点击发亮的格子扩张，或在下方建造 / 研究';
+    else if (affordableClaim > 0) hint = '点击发亮的格子扩张领土';
+    else if (canDoCard) hint = '下方有可以建造或研究的项目';
+    else if (claimableCount > 0) hint = '资源暂时不够，结束回合积累一下吧';
+    else hint = '周围已无空地，专心发展内政吧';
+
+    var pending = game.pendingEvent ? byId(EVENTS, game.pendingEvent.id) : null;
+    var players = game.players.map(function (_, i2) { return playerView(game, i2); });
+    var ranking = players.slice().sort(function (a, b) { return b.score - a.score; });
+
+    return {
+      round: game.round, maxRound: game.maxRound, phase: game.phase, cur: pi, turnNo: game.turnNo,
+      isHumanTurn: humanTurn, mode: game.mode, seed: game.seed, difficulty: game.difficulty,
+      humanCount: game.players.filter(function (x) { return x.isHuman; }).length,
+      players: players, ranking: ranking, winner: game.winner,
+      actionsLeft: game.phase === 'playing' ? actionsLeft(game) : 0, actionsPerTurn: ACTIONS_PER_TURN,
+      me: {
+        idx: pi, name: p.name, civName: civ.name, icon: civ.icon, color: civ.color, bonus: civ.bonus,
+        res: { F: p.res.F, P: p.res.P, S: p.res.S, C: p.culture }, income: p.income,
+        era: era, eraName: ERAS[era], score: computeScore(game, pi), tiles: countTiles(game, pi),
+        techsDone: p.techs.length, techsInEra: p.techs.length % TECHS_PER_ERA, techsPerEra: TECHS_PER_ERA,
+        wonders: p.wonders.map(function (id) { return byId(WONDERS, id).name; })
+      },
+      board: { w: W, h: H, tiles: tiles },
+      buildings: buildings, wonders: wonders, techs: techs,
+      log: game.log.slice(-14).reverse().map(function (e) {
+        var who = e.p >= 0 ? game.players[e.p] : null;
+        return { round: e.r, who: who ? who.name : '', icon: who ? byId(CIVS, who.civ).icon : '📜', color: who ? byId(CIVS, who.civ).color : '', text: e.t, isMe: e.p === pi };
+      }),
+      pendingEvent: pending ? { id: pending.id, name: pending.name, icon: pending.icon, text: pending.text, round: game.pendingEvent.round } : null,
+      hint: hint
+    };
+  }
+
+  function tileInfo(game, idx) {
+    var t = game.tiles[idx], terr = TERRAINS[t.t];
+    var owner = t.o >= 0 ? game.players[t.o] : null;
+    var lines = [];
+    if (t.cap) lines.push(owner.name + '的首都');
+    else lines.push(terr.name + (owner ? '（' + owner.name + '）' : '（无主）'));
+    lines.push('产出 ' + (yieldText(t.o >= 0 ? tileYield(game, t.o, t) : (t.cap ? CAPITAL_YIELD : terr.yields)) || '无'));
+    if (terr.needTech) lines.push('需研究「' + byId(TECHS, terr.needTech).name + '」才能占领');
+    if (terr.bonus) lines.push(t.looted ? '遗迹已被探索' : '首次占领可获得一份随机奖励');
+    if (t.t === 'natwonder') lines.push('每回合额外 +1🎭');
+    return { title: lines[0], lines: lines.slice(1), icon: t.cap ? byId(CIVS, owner.civ).icon : terr.icon };
+  }
+
+  // ------------------------------------------------------------
+  // 存档
+  // ------------------------------------------------------------
+  function serialize(game) { return JSON.stringify(game); }
+  function load(json) {
+    var g = typeof json === 'string' ? JSON.parse(json) : json;
+    if (!g || g.v !== 1 || !g.tiles || !g.players) throw new Error('存档格式不正确');
+    return g;
+  }
+
+  return {
+    W: W, H: H, MAX_ROUND: MAX_ROUND, EVENT_EVERY: EVENT_EVERY, ACTIONS_PER_TURN: ACTIONS_PER_TURN, SCORE: SCORE,
+    RES: RES, FESTIVAL: FESTIVAL, FUTURE: FUTURE, TERRAINS: TERRAINS, CIVS: CIVS, ERAS: ERAS, TECHS: TECHS, BUILDINGS: BUILDINGS, WONDERS: WONDERS, EVENTS: EVENTS,
+    createGame: createGame, dailySeed: dailySeed,
+    getView: getView, tileInfo: tileInfo, getLegalActions: getLegalActions,
+    applyAction: applyAction, endTurn: endTurn, ackEvent: ackEvent,
+    computeIncome: computeIncome, computeScore: computeScore, expandCost: expandCost, buildCost: buildCost, techCost: techCost, eraOf: eraOf,
+    serialize: serialize, load: load
+  };
+});
+
+</script>
+<script>
+/* 文明小桌 · 网页版交互（同一引擎，渲染引擎给出的视图模型） */
+(function () {
+  'use strict';
+  var E = window.CivEngine;
+  var $ = function (s) { return document.querySelector(s); };
+  var SAVE_KEY = 'civ-board/save', META_KEY = 'civ-board/meta', BEST_KEY = 'civ-board/best/', HELP_KEY = 'civ-board/help-seen';
+  var store = {
+    get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) { /* 隐私模式等情况下忽略 */ } },
+    del: function (k) { try { localStorage.removeItem(k); } catch (e) { /* ignore */ } }
+  };
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+  var game = null, tab = 'build', seenTurn = 0, toastTimer = null;
+  var setup = { mode: 'daily', civ: 'china', opp: 2, diff: 'normal', humans: 2 };
+  var MODE_NOTE = {
+    daily: '今天所有人玩的都是同一张地图，比比谁的分高。',
+    random: '每次都是一张新地图。',
+    hotseat: '两到四位朋友共用一台手机，轮到谁就递给谁。'
+  };
+
+  // ------------------------------------------------------------ 开始页
+  function initStart() {
+    var grid = $('#civGrid');
+    grid.innerHTML = E.CIVS.map(function (c) {
+      return '<button type="button" class="civ' + (c.id === setup.civ ? ' is-on' : '') + '" data-civ="' + c.id + '" style="--civ:' + c.color + '">' +
+        '<span class="ci">' + c.icon + '</span><span class="cn">' + c.name + '</span><span class="cb">' + esc(c.bonus) + '</span></button>';
+    }).join('');
+    grid.addEventListener('click', function (e) {
+      var b = e.target.closest('.civ'); if (!b) return;
+      setup.civ = b.getAttribute('data-civ');
+      grid.querySelectorAll('.civ').forEach(function (x) { x.classList.toggle('is-on', x === b); });
+    });
+    bindSeg('#modeSeg', 'mode', function () {
+      $('#modeNote').textContent = MODE_NOTE[setup.mode];
+      $('#oppPanel').hidden = setup.mode === 'hotseat';
+      $('#hotPanel').hidden = setup.mode !== 'hotseat';
+    });
+    bindSeg('#oppSeg', 'opp', null, Number);
+    bindSeg('#diffSeg', 'diff');
+    bindSeg('#humanSeg', 'humans', null, Number);
+    $('#btnStart').addEventListener('click', startGame);
+    $('#btnContinue').addEventListener('click', continueGame);
+    $('#btnHelp').addEventListener('click', function () { showHelp(false); });
+    refreshStart();
+  }
+  function bindSeg(sel, key, after, cast) {
+    var seg = $(sel);
+    seg.addEventListener('click', function (e) {
+      var b = e.target.closest('.seg-btn'); if (!b) return;
+      setup[key] = cast ? cast(b.getAttribute('data-v')) : b.getAttribute('data-v');
+      seg.querySelectorAll('.seg-btn').forEach(function (x) { x.classList.toggle('is-on', x === b); });
+      if (after) after();
+    });
+  }
+  function refreshStart() {
+    var saved = loadSaved();
+    $('#btnContinue').hidden = !(saved && saved.phase === 'playing');
+    var best = store.get(BEST_KEY + E.dailySeed(new Date()));
+    var line = '';
+    if (best) { try { var b = JSON.parse(best); line = '今日最佳：' + b.score + ' 分（第 ' + b.rank + ' 名，' + b.civ + '）'; } catch (e) { /* ignore */ } }
+    $('#bestLine').textContent = line;
+  }
+  function loadSaved() {
+    var s = store.get(SAVE_KEY); if (!s) return null;
+    try { return E.load(s); } catch (e) { return null; }
+  }
+  function startGame() {
+    var players = [], i;
+    if (setup.mode === 'hotseat') {
+      for (i = 0; i < setup.humans; i++) players.push({ civ: i === 0 ? setup.civ : null, isHuman: true, name: '玩家' + (i + 1) });
+    } else {
+      players.push({ civ: setup.civ, isHuman: true });
+      for (i = 0; i < setup.opp; i++) players.push({ civ: null, isHuman: false });
+    }
+    var seed = setup.mode === 'daily' ? E.dailySeed(new Date()) : (Date.now() % 2147483647);
+    game = E.createGame({ seed: seed, mode: setup.mode, difficulty: setup.diff, players: players });
+    seenTurn = 0; tab = 'build';
+    setTab('build');
+    showScreen('game');
+    afterChange();
+    if (!store.get(HELP_KEY)) { showHelp(true); store.set(HELP_KEY, '1'); }
+  }
+  function continueGame() {
+    var g = loadSaved(); if (!g) return;
+    game = g;
+    try { var meta = JSON.parse(store.get(META_KEY) || '{}'); seenTurn = meta.seenTurn || 0; tab = meta.tab || 'build'; } catch (e) { seenTurn = 0; }
+    setTab(tab);
+    showScreen('game');
+    afterChange();
+  }
+  function showScreen(name) {
+    $('#start').hidden = name !== 'start';
+    $('#game').hidden = name !== 'game';
+    window.scrollTo(0, 0);
+    if (name === 'start') refreshStart();
+  }
+
+  // ------------------------------------------------------------ 对局页
+  function save() {
+    if (!game) return;
+    store.set(SAVE_KEY, E.serialize(game));
+    store.set(META_KEY, JSON.stringify({ seenTurn: seenTurn, tab: tab }));
+  }
+  function afterChange() { save(); render(); queueModals(); }
+
+  function render() {
+    var v = E.getView(game);
+    $('#roundText').textContent = '第 ' + v.round + ' / ' + v.maxRound + ' 回合';
+    $('#eraText').textContent = v.me.icon + ' ' + v.me.name + ' · ' + v.me.eraName;
+    $('#playersStrip').innerHTML = v.players.map(function (p) {
+      return '<span class="pchip' + (p.isCur ? ' is-cur' : '') + '" style="--c:' + p.color + '"><span class="dot"></span>' + p.icon + ' ' + esc(p.name) + ' <span class="sc">' + p.score + '</span></span>';
+    }).join('');
+    var inc = v.me.income, res = v.me.res;
+    $('#meBar').innerHTML = [['F', '🌾 粮食', res.F, inc.F], ['P', '⚒️ 生产', res.P, inc.P], ['S', '🔬 科技', res.S, inc.S], ['C', '🎭 文化', res.C, inc.C]].map(function (r) {
+      return '<div class="res" title="' + E.RES[r[0]].use + '"><span class="rn"><span>' + r[1] + '</span></span><span class="rv">' + r[2] + '<span class="ri">+' + r[3] + '</span></span></div>';
+    }).join('');
+    $('#board').innerHTML = v.board.tiles.map(function (t) {
+      var cls = 'tile t-' + t.terrain + (t.owner >= 0 ? ' owned' : '') + (t.isCap ? ' cap' : '') + (t.claimable ? ' claimable' : '') + (t.affordable ? ' affordable' : '');
+      var style = t.owner >= 0 ? ' style="--owner:' + t.color + '"' : '';
+      return '<button type="button" class="' + cls + '" data-idx="' + t.idx + '"' + style + ' aria-label="' + esc(t.name) + '">' +
+        '<span class="ti">' + t.icon + '</span>' + (t.claimable ? '<span class="cost">' + t.cost + '</span>' : '') + '</button>';
+    }).join('');
+    $('#hint').textContent = v.hint;
+    renderCards(v);
+    var pips = '';
+    for (var i = 0; i < v.actionsPerTurn; i++) pips += '<span class="pip' + (i < v.actionsLeft ? '' : ' off') + '"></span>';
+    $('#actionsLeft').innerHTML = v.phase === 'playing' ? '<span>行动</span>' + pips : '';
+    $('#btnEnd').disabled = !(v.phase === 'playing' && v.isHumanTurn);
+    $('#btnEnd').textContent = v.phase === 'over' ? '对局结束' : '结束回合';
+  }
+
+  function renderCards(v) {
+    var html = '';
+    function card(c, type) {
+      var extra = '';
+      if (type === 'research' && !c.repeat) extra = c.state === 'done' ? '<span class="tag">已完成</span>' : '<span class="tag era">' + esc(c.eraName) + '</span>';
+      else if (c.state === 'locked' || c.state === 'taken') extra = '<span class="tag">' + esc(c.lockText) + '</span>';
+      else if (c.state === 'done') extra = '<span class="tag">' + (c.repeat ? '可重复' : '已完成') + '</span>';
+      else if (c.repeat) extra = '<span class="tag">可重复</span>';
+      return '<button type="button" class="card ' + c.state + '" data-type="' + type + '" data-id="' + c.id + '">' +
+        '<span class="ic">' + c.icon + '</span><span><span class="nm">' + esc(c.name) + extra + '</span><span class="ef">' + esc(c.effect) + '</span></span>' +
+        '<span class="pill">' + (c.state === 'done' && !c.repeat ? '✓' : esc(c.costText)) + '</span></button>';
+    }
+    if (tab === 'build') {
+      html = v.buildings.map(function (b) { return card(b, b.id === 'festival' ? 'festival' : 'build'); }).join('');
+    } else if (tab === 'tech') {
+      html = '<p class="card-head">研究完本时代的 ' + v.me.techsPerEra + ' 项科技就进入下一时代 · 当前 ' + esc(v.me.eraName) + '</p>' +
+        v.techs.map(function (t) { return card(t, t.id === 'future' ? 'future' : 'research'); }).join('');
+    } else if (tab === 'wonder') {
+      html = '<p class="card-head">奇观全场唯一，谁先建成归谁 · 每座 +' + E.SCORE.wonder + ' 分</p>' +
+        v.wonders.map(function (w) { return card(w, 'wonder'); }).join('');
+    } else {
+      html = v.log.length ? v.log.map(function (l) {
+        return '<div class="logrow' + (l.isMe ? ' me' : '') + '" style="--lc:' + (l.color || 'inherit') + '"><span>' + l.icon + '</span><span><span class="lr">第 ' + l.round + ' 回合</span> ' +
+          (l.who ? '<span class="lw">' + esc(l.who) + '</span> ' : '') + esc(l.text) + '</span></div>';
+      }).join('') : '<p class="note center">还没有动静</p>';
+    }
+    $('#cards').innerHTML = html;
+  }
+
+  function setTab(name) {
+    tab = name;
+    document.querySelectorAll('#tabs button').forEach(function (b) { b.classList.toggle('is-on', b.getAttribute('data-tab') === name); });
+    if (game) { renderCards(E.getView(game)); save(); }
+  }
+
+  function onTile(idx) {
+    if (!game || game.phase !== 'playing') return;
+    var v = E.getView(game), t = v.board.tiles[idx];
+    if (t.claimable) {
+      var r = E.applyAction(game, { type: 'expand', idx: idx });
+      if (r.ok) { toast(v.me.icon + ' ' + r.msg, true); afterChange(); } else { toast(r.msg); }
+      return;
+    }
+    var info = E.tileInfo(game, idx);
+    toast(info.icon + ' ' + info.title + (info.lines.length ? ' · ' + info.lines.join('，') : ''));
+  }
+
+  function onCard(type, id) {
+    if (!game || game.phase !== 'playing') return;
+    var v = E.getView(game);
+    if (!v.isHumanTurn) return;
+    var r = E.applyAction(game, { type: type, id: id });
+    if (r.ok) { toast(v.me.icon + ' ' + r.msg, true); afterChange(); } else { toast(r.msg); }
+  }
+
+  function endTurn() {
+    if (!game || game.phase !== 'playing') return;
+    var v = E.getView(game);
+    if (!v.isHumanTurn) return;
+    var hasAI = v.players.some(function (p) { return !p.isHuman; });
+    if (hasAI) {
+      showModal('<div class="busy">⏳ 其他文明行动中…</div>', true);
+      setTimeout(function () { E.endTurn(game); closeModal(); afterChange(); }, 450);
+    } else {
+      E.endTurn(game); afterChange();
+    }
+  }
+
+  // ------------------------------------------------------------ 弹层
+  function queueModals() {
+    var v = E.getView(game);
+    if (v.phase === 'over') { showOver(v); return; }
+    if (v.humanCount > 1 && v.isHumanTurn && v.turnNo !== seenTurn) { showHandoff(v); return; }
+    seenTurn = v.turnNo; save();
+    if (v.pendingEvent) { showEvent(v.pendingEvent); }
+  }
+  function showModal(html, plain) {
+    var card = $('#modalCard');
+    card.className = 'modal-card' + (plain ? ' center' : '');
+    card.innerHTML = html;
+    $('#modal').hidden = false;
+  }
+  function closeModal() { $('#modal').hidden = true; }
+  function showEvent(ev) {
+    showModal('<div class="m-icon">' + ev.icon + '</div><h2>事件 · ' + esc(ev.name) + '</h2><p class="m-text">' + esc(ev.text) + '</p>' +
+      '<div class="m-actions"><button type="button" class="btn primary big" id="mOk">知道了</button></div>', true);
+    $('#mOk').addEventListener('click', function () { E.ackEvent(game); closeModal(); save(); render(); });
+  }
+  function showHandoff(v) {
+    showModal('<div class="m-icon">' + v.me.icon + '</div><h2>轮到 ' + esc(v.me.name) + '</h2><p class="m-text">' + esc(v.me.civName) + ' · ' + esc(v.me.bonus) + '<br>请把手机交给 TA，其他人先别偷看。</p>' +
+      '<div class="m-actions"><button type="button" class="btn primary big" id="mOk">我准备好了</button></div>', true);
+    $('#mOk').addEventListener('click', function () { seenTurn = v.turnNo; closeModal(); save(); queueModals(); });
+  }
+  function showOver(v) {
+    var medals = ['🥇', '🥈', '🥉', '4'];
+    var myIdx = -1;
+    v.ranking.forEach(function (p, i) { if (p.isHuman && myIdx < 0) myIdx = i; });
+    if (v.mode === 'daily' && v.humanCount === 1) {
+      var me = v.ranking[myIdx];
+      var key = BEST_KEY + v.seed, prev = null;
+      try { prev = JSON.parse(store.get(key) || 'null'); } catch (e) { prev = null; }
+      if (!prev || me.score > prev.score) store.set(key, JSON.stringify({ score: me.score, rank: myIdx + 1, civ: me.civName }));
+    }
+    var rows = v.ranking.map(function (p, i) {
+      return '<div class="rrow' + (i === 0 ? ' win' : '') + '" style="--c:' + p.color + '"><span>' + medals[i] + '</span><span>' + p.icon + ' ' + esc(p.name) +
+        '<div class="rd">领土 ' + p.tiles + ' · 科技 ' + p.techs + ' · 建筑 ' + p.buildings + ' · 奇观 ' + p.wonders.length + '</div></span><span class="rs">' + p.score + '</span></div>';
+    }).join('');
+    var title = v.ranking[0].isHuman ? '🎉 ' + esc(v.ranking[0].name) + ' 赢了' : '时代落幕';
+    showModal('<h2>' + title + '</h2><p class="m-text">' + v.maxRound + ' 回合过去，' + esc(v.ranking[0].name) + ' 以 ' + v.ranking[0].score + ' 分成为最伟大的文明。</p><div class="rank">' + rows + '</div>' +
+      '<div class="m-actions"><button type="button" class="btn primary big" id="mAgain">再来一局</button><button type="button" class="btn" id="mCopy">复制战报</button><button type="button" class="btn ghost" id="mHome">回到首页</button></div>');
+    $('#mAgain').addEventListener('click', function () { closeModal(); store.del(SAVE_KEY); startGame(); });
+    $('#mHome').addEventListener('click', function () { closeModal(); store.del(SAVE_KEY); showScreen('start'); });
+    $('#mCopy').addEventListener('click', function () {
+      var text = '文明小桌 · ' + (v.mode === 'daily' ? '每日一局 ' + v.seed : '随机地图') + '\n' + v.ranking.map(function (p, i) { return medals[i] + ' ' + p.name + ' ' + p.score + '分'; }).join('\n');
+      copyText(text, this);
+    });
+  }
+  function showHelp(first) {
+    showModal('<h2>玩法说明</h2><div class="help"><ol>' +
+      '<li><b>扩张</b>：🌾粮食用来占领土地。点击发亮的格子即可，领土越多越贵。</li>' +
+      '<li><b>建造</b>：⚒️生产用来建建筑和奇观。建筑每回合带来产出；奇观全场唯一，谁先建成归谁。</li>' +
+      '<li><b>研究</b>：🔬科技用来研究。研究完本时代的 3 项科技就进入下一时代，解锁新东西。</li>' +
+      '<li><b>行动</b>：每回合最多 ' + E.ACTIONS_PER_TURN + ' 次行动，做完点「结束回合」。每 3 回合翻开一张事件卡，影响所有文明。</li>' +
+      '<li><b>胜负</b>：' + E.MAX_ROUND + ' 回合后分数最高者获胜。分数 = 领土×' + E.SCORE.tile + ' + 建筑×' + E.SCORE.building + ' + 科技×' + E.SCORE.tech + ' + 奇观×' + E.SCORE.wonder + ' + 🎭文化。</li>' +
+      '</ol><p class="label" style="margin-top:12px">文明特色</p><div class="civs">' + E.CIVS.map(function (c) { return '<span>' + c.icon + ' ' + c.name + '：' + esc(c.bonus) + '</span>'; }).join('') + '</div></div>' +
+      '<div class="m-actions"><button type="button" class="btn primary big" id="mOk">' + (first ? '开始吧' : '知道了') + '</button></div>');
+    $('#mOk').addEventListener('click', function () { closeModal(); if (first && game) queueModals(); });
+  }
+  function showMenu() {
+    showModal('<h2>菜单</h2><div class="m-actions">' +
+      '<button type="button" class="btn" id="mHelp">玩法说明</button>' +
+      '<button type="button" class="btn" id="mHome">保存并回到首页</button>' +
+      '<button type="button" class="btn" id="mRestart" style="color:var(--seal)">放弃本局，重新开始</button>' +
+      '<button type="button" class="btn ghost" id="mClose">继续游戏</button></div>');
+    $('#mHelp').addEventListener('click', function () { showHelp(false); });
+    $('#mHome').addEventListener('click', function () { closeModal(); save(); showScreen('start'); });
+    $('#mRestart').addEventListener('click', function () { closeModal(); store.del(SAVE_KEY); startGame(); });
+    $('#mClose').addEventListener('click', closeModal);
+  }
+  function copyText(text, btn) {
+    var done = function () { if (btn) btn.textContent = '已复制'; };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function () { fallbackCopy(text, done); });
+    } else { fallbackCopy(text, done); }
+  }
+  function fallbackCopy(text, done) {
+    var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) { toast('复制失败，请长按选择文字'); }
+    document.body.removeChild(ta);
+  }
+  function toast(text, ok) {
+    var t = $('#toast');
+    t.textContent = text; t.className = 'toast' + (ok ? ' ok' : ''); t.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.hidden = true; }, ok ? 1400 : 2400);
+  }
+
+  // ------------------------------------------------------------ 事件绑定与启动
+  function bindGame() {
+    $('#board').addEventListener('click', function (e) {
+      var b = e.target.closest('.tile'); if (!b) return;
+      onTile(Number(b.getAttribute('data-idx')));
+    });
+    $('#cards').addEventListener('click', function (e) {
+      var b = e.target.closest('.card'); if (!b) return;
+      onCard(b.getAttribute('data-type'), b.getAttribute('data-id'));
+    });
+    $('#tabs').addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b) return;
+      setTab(b.getAttribute('data-tab'));
+    });
+    $('#btnEnd').addEventListener('click', endTurn);
+    $('#btnMenu').addEventListener('click', showMenu);
+    $('#modal').addEventListener('click', function (e) {
+      // 事件卡、交接、结算这些需要明确确认的弹层不点背景关闭；菜单与帮助可以
+      if (e.target !== e.currentTarget) return;
+      if ($('#mClose') || ($('#mOk') && $('#modalCard').querySelector('.help'))) closeModal();
+    });
+  }
+
+  function boot(data) {
+    initStart(); bindGame();
+    if (data && data.save) {
+      try { game = E.load(data.save); seenTurn = data.seenTurn || 0; tab = data.tab || 'build'; setTab(tab); showScreen('game'); afterChange(); return; } catch (e) { /* 回退到首页 */ }
+    }
+    showScreen('start');
+  }
+  var hot = window.claude && window.claude.hot;
+  if (hot && hot.snapshot) hot.snapshot(function () { return { save: game && !$('#game').hidden ? E.serialize(game) : null, seenTurn: seenTurn, tab: tab }; });
+  if (hot && hot.ready) hot.ready(boot); else boot((hot && hot.data) || {});
+})();
+
+</script>

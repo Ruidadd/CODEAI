@@ -1,0 +1,74 @@
+.game { padding-bottom: 180rpx; }
+.topbar { margin-bottom: 12rpx; }
+.round { display: flex; justify-content: space-between; align-items: baseline; }
+.round-num { font-size: 40rpx; letter-spacing: 2rpx; font-family: "STKaiti", "KaiTi", serif; }
+.era { color: #555b61; font-size: 26rpx; }
+.players { display: flex; white-space: nowrap; margin-top: 10rpx; }
+.pchip { display: inline-flex; align-items: center; gap: 8rpx; padding: 6rpx 16rpx 6rpx 12rpx; border-radius: 999rpx; background: #fffdf8; border: 2rpx solid #d8d2c3; font-size: 26rpx; margin-right: 10rpx; }
+.pchip .dot { width: 16rpx; height: 16rpx; border-radius: 50%; }
+.pchip .sc { font-size: 30rpx; font-family: "STKaiti", "KaiTi", serif; }
+
+.me-bar { display: flex; gap: 10rpx; margin-bottom: 12rpx; }
+.res { flex: 1; min-width: 0; background: #fffdf8; border: 2rpx solid #d8d2c3; border-radius: 20rpx; padding: 10rpx 14rpx; display: flex; flex-direction: column; }
+.res .rn { font-size: 22rpx; color: #868b90; }
+.res .rv { display: flex; align-items: baseline; gap: 10rpx; }
+.res .rvn { font-size: 40rpx; line-height: 1.1; font-family: "STKaiti", "KaiTi", serif; }
+.res .ri { font-size: 22rpx; color: #2f7d6b; font-weight: 600; }
+
+.board-wrap { background: #ebe7dc; border: 2rpx solid #d8d2c3; border-radius: 24rpx; padding: 10rpx; }
+.board { display: flex; flex-wrap: wrap; }
+.tile { position: relative; width: 12.5%; height: 85rpx; display: flex; align-items: center; justify-content: center; font-size: 40rpx; line-height: 1; border-radius: 12rpx; overflow: hidden; border: 3rpx solid #ebe7dc; background: #d6e7ad; box-sizing: border-box; }
+.tile-hover { opacity: .8; }
+.t-forest { background: #a5c98c; } .t-mountain { background: #d3ccc1; } .t-river { background: #c0ddf0; }
+.t-desert { background: #f0dca8; } .t-ocean { background: #93c1e1; } .t-ruins { background: #e4d3ac; } .t-natwonder { background: #e9cae6; }
+.tile .tint { position: absolute; left: 0; top: 0; right: 0; bottom: 0; opacity: .28; }
+.tile .ti { position: relative; z-index: 1; }
+.tile.cap .ti { font-size: 46rpx; }
+.tile.claimable { outline: 3rpx dashed #2f7d6b; outline-offset: -5rpx; }
+.tile.affordable { outline-style: solid; }
+.tile .cost { position: absolute; right: 3rpx; bottom: 3rpx; z-index: 2; font-size: 18rpx; font-weight: 700; line-height: 1.3; padding: 0 7rpx; border-radius: 10rpx; background: #fffdf8; color: #868b90; border: 2rpx solid #d8d2c3; }
+.tile.affordable .cost { background: #2f7d6b; color: #fff; border-color: #2f7d6b; }
+.hint { text-align: center; color: #555b61; font-size: 26rpx; margin: 12rpx 0; min-height: 1.5em; }
+
+.tabs { display: flex; gap: 8rpx; background: #ebe7dc; padding: 8rpx; border-radius: 22rpx; margin-bottom: 12rpx; }
+.tab { flex: 1; text-align: center; border-radius: 16rpx; padding: 14rpx 6rpx; color: #555b61; font-size: 28rpx; }
+.tab.is-on { background: #fffdf8; color: #1f2429; font-weight: 600; box-shadow: 0 2rpx 8rpx rgba(20, 25, 30, .08); }
+.cards { display: flex; flex-direction: column; gap: 12rpx; }
+.card-head { font-size: 24rpx; color: #868b90; letter-spacing: 1rpx; }
+.card { display: flex; align-items: center; gap: 18rpx; padding: 16rpx 22rpx; background: #fffdf8; border: 2rpx solid #d8d2c3; border-radius: 22rpx; }
+.card-hover { opacity: .85; }
+.card .ic { font-size: 44rpx; line-height: 1; width: 60rpx; text-align: center; }
+.card .body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.card .nm { font-weight: 600; display: flex; align-items: center; gap: 10rpx; flex-wrap: wrap; }
+.card .ef { font-size: 24rpx; color: #555b61; }
+.card .pill { font-size: 30rpx; padding: 4rpx 18rpx; border-radius: 999rpx; background: #ebe7dc; color: #555b61; white-space: nowrap; font-family: "STKaiti", "KaiTi", serif; }
+.card.ok { border-color: #2f7d6b; }
+.card.ok .pill { background: #2f7d6b; color: #fff; }
+.card.poor .pill { color: #b23a30; }
+.card.locked, .card.done, .card.taken { opacity: .6; }
+.card.done { border-style: dashed; }
+.card .tag { font-size: 20rpx; font-weight: 500; padding: 0 10rpx; border-radius: 10rpx; background: #ebe7dc; color: #868b90; }
+.card .tag.era { background: #d9ece5; color: #2f7d6b; }
+.logrow { display: flex; gap: 14rpx; padding: 12rpx 6rpx; border-bottom: 2rpx dashed #d8d2c3; font-size: 26rpx; }
+.logrow .li { width: 40rpx; text-align: center; }
+.logrow .lt { flex: 1; min-width: 0; }
+.logrow .lr { color: #868b90; font-size: 22rpx; }
+.logrow .lw { font-weight: 600; }
+
+.actionbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; align-items: center; gap: 18rpx; padding: 18rpx 24rpx; padding-bottom: calc(18rpx + env(safe-area-inset-bottom)); background: #fffdf8; border-top: 2rpx solid #d8d2c3; }
+.actions-left { display: flex; align-items: center; gap: 8rpx; font-size: 26rpx; color: #555b61; }
+.pip { width: 18rpx; height: 18rpx; border-radius: 50%; background: #2f7d6b; }
+.pip.off { background: #d8d2c3; }
+.btn.end { margin-left: auto; background: #b23a30; color: #fffaf5; border-color: #b23a30; font-size: 36rpx; letter-spacing: 4rpx; padding: 18rpx 40rpx; border-radius: 24rpx; font-family: "STKaiti", "KaiTi", serif; }
+
+.rank { display: flex; flex-direction: column; gap: 12rpx; margin-top: 24rpx; text-align: left; }
+.rrow { display: flex; align-items: center; gap: 14rpx; padding: 14rpx 18rpx; border-radius: 20rpx; background: #ebe7dc; border-left: 8rpx solid #d8d2c3; }
+.rrow.win { background: #d9ece5; }
+.rrow .rm { width: 44rpx; text-align: center; }
+.rrow .rb { flex: 1; min-width: 0; }
+.rrow .rd { font-size: 22rpx; color: #868b90; }
+.rrow .rs { font-size: 40rpx; font-family: "STKaiti", "KaiTi", serif; }
+.help .hl { color: #555b61; font-size: 28rpx; margin-top: 12rpx; text-align: left; }
+.help .hb { color: #1f2429; font-weight: 600; }
+.help .civs { display: flex; flex-direction: column; gap: 6rpx; margin-top: 8rpx; text-align: left; }
+.help .civline { font-size: 26rpx; color: #555b61; }
