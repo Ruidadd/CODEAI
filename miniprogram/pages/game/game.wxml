@@ -1,0 +1,99 @@
+<view class="page game" wx:if="{{view}}">
+  <view class="topbar">
+    <view class="round">
+      <text class="round-num">第 {{view.round}} / {{view.maxRound}} 回合</text>
+      <text class="era">{{view.me.icon}} {{view.me.name}} · {{view.me.eraName}}</text>
+    </view>
+    <scroll-view scroll-x class="players" enable-flex="{{true}}">
+      <view wx:for="{{view.players}}" wx:key="idx" class="pchip {{item.isCur ? 'is-cur' : ''}}" style="{{item.isCur ? 'border-color:' + item.color + ';box-shadow: inset 0 0 0 2rpx ' + item.color : ''}}">
+        <view class="dot" style="background:{{item.color}}"></view>
+        <text>{{item.icon}} {{item.name}}</text>
+        <text class="sc">{{item.score}}</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view class="me-bar">
+    <view wx:for="{{resRows}}" wx:key="k" class="res">
+      <text class="rn">{{item.label}}</text>
+      <view class="rv"><text class="rvn">{{item.val}}</text><text class="ri">+{{item.inc}}</text></view>
+    </view>
+  </view>
+
+  <view class="board-wrap">
+    <view class="board">
+      <view wx:for="{{view.board.tiles}}" wx:key="idx"
+            class="tile t-{{item.terrain}} {{item.owner >= 0 ? 'owned' : ''}} {{item.isCap ? 'cap' : ''}} {{item.claimable ? 'claimable' : ''}} {{item.affordable ? 'affordable' : ''}}"
+            style="{{item.owner >= 0 ? 'box-shadow: inset 0 0 0 5rpx ' + item.color : ''}}"
+            data-idx="{{item.idx}}" bindtap="onTile" hover-class="tile-hover">
+        <view wx:if="{{item.owner >= 0}}" class="tint" style="background:{{item.color}}"></view>
+        <text class="ti">{{item.icon}}</text>
+        <text wx:if="{{item.claimable}}" class="cost">{{item.cost}}</text>
+      </view>
+    </view>
+  </view>
+  <view class="hint">{{view.hint}}</view>
+
+  <view class="tabs">
+    <view wx:for="{{tabs}}" wx:key="id" class="tab {{tab === item.id ? 'is-on' : ''}}" data-tab="{{item.id}}" bindtap="onTab">{{item.name}}</view>
+  </view>
+
+  <view class="cards">
+    <block wx:if="{{tab !== 'log'}}">
+      <view wx:if="{{cardHead}}" class="card-head">{{cardHead}}</view>
+      <view wx:for="{{cards}}" wx:key="id" class="card {{item.state}}" data-type="{{item.type}}" data-id="{{item.id}}" bindtap="onCard" hover-class="card-hover">
+        <text class="ic">{{item.icon}}</text>
+        <view class="body">
+          <view class="nm"><text>{{item.name}}</text><text wx:if="{{item.tag}}" class="tag {{item.tagCls}}">{{item.tag}}</text></view>
+          <text class="ef">{{item.effect}}</text>
+        </view>
+        <text class="pill">{{item.pill}}</text>
+      </view>
+    </block>
+    <block wx:else>
+      <view wx:for="{{view.log}}" wx:key="index" class="logrow">
+        <text class="li">{{item.icon}}</text>
+        <view class="lt"><text class="lr">第 {{item.round}} 回合</text> <text class="lw" style="color:{{item.color}}">{{item.who}}</text> {{item.text}}</view>
+      </view>
+      <view wx:if="{{!view.log.length}}" class="note center">还没有动静</view>
+    </block>
+  </view>
+
+  <view class="actionbar">
+    <view class="btn ghost small" hover-class="btn-hover" bindtap="onMenu">菜单</view>
+    <view class="actions-left" wx:if="{{view.phase === 'playing'}}">
+      <text>行动</text>
+      <view wx:for="{{pips}}" wx:key="index" class="pip {{item ? '' : 'off'}}"></view>
+    </view>
+    <view class="btn end {{canEnd ? '' : 'disabled'}}" hover-class="btn-hover" bindtap="onEnd">{{view.phase === 'over' ? '对局结束' : '结束回合'}}</view>
+  </view>
+
+  <view wx:if="{{modal}}" class="modal" bindtap="onModalBg">
+    <view class="modal-card {{modal.center ? 'center' : ''}}" catchtap="noop">
+      <text wx:if="{{modal.icon}}" class="m-icon">{{modal.icon}}</text>
+      <view class="m-title">{{modal.title}}</view>
+      <view wx:if="{{modal.text}}" class="m-text">{{modal.text}}</view>
+
+      <view wx:if="{{modal.type === 'over'}}" class="rank">
+        <view wx:for="{{modal.ranking}}" wx:key="idx" class="rrow {{index === 0 ? 'win' : ''}}" style="border-left-color:{{item.color}}">
+          <text class="rm">{{modal.medals[index]}}</text>
+          <view class="rb">
+            <text>{{item.icon}} {{item.name}}</text>
+            <view class="rd">领土 {{item.tiles}} · 科技 {{item.techs}} · 建筑 {{item.buildings}} · 奇观 {{item.wonders.length}}</view>
+          </view>
+          <text class="rs">{{item.score}}</text>
+        </view>
+      </view>
+
+      <view wx:if="{{modal.type === 'help'}}" class="help">
+        <view wx:for="{{modal.lines}}" wx:key="index" class="hl"><text class="hb">{{item.b}}</text>{{item.t}}</view>
+        <view class="label" style="margin-top:20rpx">文明特色</view>
+        <view class="civs"><text wx:for="{{modal.civs}}" wx:key="id" class="civline">{{item.icon}} {{item.name}}：{{item.bonus}}</text></view>
+      </view>
+
+      <view class="m-actions">
+        <view wx:for="{{modal.buttons}}" wx:key="id" class="btn {{item.cls}}" hover-class="btn-hover" data-id="{{item.id}}" bindtap="onModalBtn">{{item.label}}</view>
+      </view>
+    </view>
+  </view>
+</view>

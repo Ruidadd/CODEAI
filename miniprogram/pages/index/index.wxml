@@ -1,0 +1,69 @@
+<view class="page start">
+  <view class="hero">
+    <text class="hero-mark">🏛️</text>
+    <view class="title">文明小桌</view>
+    <view class="tagline">一局二十回合的桌游版文明。点一点，建一座属于你的文明。</view>
+  </view>
+
+  <view class="panel">
+    <view class="label">对局方式</view>
+    <view class="seg">
+      <view wx:for="{{modes}}" wx:key="id" class="seg-btn {{mode === item.id ? 'is-on' : ''}}" data-v="{{item.id}}" bindtap="pickMode">{{item.name}}</view>
+    </view>
+    <view class="note">{{modeNote}}</view>
+  </view>
+
+  <view class="panel">
+    <view class="label">选择文明</view>
+    <view class="civ-grid">
+      <view wx:for="{{civs}}" wx:key="id" class="civ {{civ === item.id ? 'is-on' : ''}}" style="{{civ === item.id ? 'border-color:' + item.color + ';background:' + item.color + '1a' : ''}}" data-v="{{item.id}}" bindtap="pickCiv">
+        <text class="ci">{{item.icon}}</text>
+        <text class="cn">{{item.name}}</text>
+        <text class="cb">{{item.bonus}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="panel" wx:if="{{mode !== 'hotseat'}}">
+    <view class="row2">
+      <view class="half">
+        <view class="label">电脑对手</view>
+        <view class="seg">
+          <view wx:for="{{[1, 2, 3]}}" wx:key="*this" class="seg-btn {{opp === item ? 'is-on' : ''}}" data-v="{{item}}" bindtap="pickOpp">{{item}} 个</view>
+        </view>
+      </view>
+      <view class="half">
+        <view class="label">电脑强度</view>
+        <view class="seg">
+          <view wx:for="{{diffs}}" wx:key="id" class="seg-btn {{diff === item.id ? 'is-on' : ''}}" data-v="{{item.id}}" bindtap="pickDiff">{{item.name}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="panel" wx:if="{{mode === 'hotseat'}}">
+    <view class="label">玩家人数（轮到谁就把手机递给谁）</view>
+    <view class="seg">
+      <view wx:for="{{[2, 3, 4]}}" wx:key="*this" class="seg-btn {{humans === item ? 'is-on' : ''}}" data-v="{{item}}" bindtap="pickHumans">{{item}} 人</view>
+    </view>
+  </view>
+
+  <view class="start-actions">
+    <view class="btn primary big" hover-class="btn-hover" bindtap="start">开始游戏</view>
+    <view wx:if="{{hasSave}}" class="btn big" hover-class="btn-hover" bindtap="continueGame">继续上次对局</view>
+    <view class="btn ghost" hover-class="btn-hover" bindtap="showHelp">玩法说明</view>
+  </view>
+  <view class="note center" wx:if="{{bestLine}}">{{bestLine}}</view>
+
+  <view wx:if="{{help}}" class="modal" bindtap="closeHelp">
+    <view class="modal-card" catchtap="noop">
+      <view class="m-title">玩法说明</view>
+      <view class="help">
+        <view wx:for="{{helpLines}}" wx:key="index" class="hl"><text class="hb">{{item.b}}</text>{{item.t}}</view>
+        <view class="label" style="margin-top:20rpx">文明特色</view>
+        <view class="civs"><text wx:for="{{civs}}" wx:key="id" class="civline">{{item.icon}} {{item.name}}：{{item.bonus}}</text></view>
+      </view>
+      <view class="m-actions"><view class="btn primary big" hover-class="btn-hover" bindtap="closeHelp">知道了</view></view>
+    </view>
+  </view>
+</view>
