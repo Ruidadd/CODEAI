@@ -1,0 +1,1863 @@
+{
+ "generated": "2026-10-09T08:34:18+00:00",
+ "x_mode": "off",
+ "entities": [
+  {
+   "id": "openai",
+   "name": "OpenAI",
+   "region": "US",
+   "domain": "digital",
+   "people": [
+    {
+     "name": "Sam Altman",
+     "role": "CEO",
+     "x": "sama"
+    },
+    {
+     "name": "Greg Brockman",
+     "role": "总裁",
+     "x": "gdb"
+    },
+    {
+     "name": "Mark Chen",
+     "role": "首席研究官",
+     "x": "markchen90"
+    }
+   ],
+   "blog": [
+    "https://openai.com/news/rss.xml"
+   ],
+   "youtube": [
+    "OpenAI"
+   ],
+   "x": [
+    "OpenAI"
+   ]
+  },
+  {
+   "id": "anthropic",
+   "name": "Anthropic",
+   "region": "US",
+   "domain": "digital",
+   "people": [
+    {
+     "name": "Dario Amodei",
+     "role": "CEO",
+     "x": "DarioAmodei"
+    },
+    {
+     "name": "Boris Cherny",
+     "role": "Claude Code",
+     "x": "bcherny"
+    }
+   ],
+   "site": "https://www.anthropic.com/news",
+   "blog": [
+    "https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_anthropic_news.xml"
+   ],
+   "youtube": [
+    "anthropic-ai"
+   ],
+   "x": [
+    "AnthropicAI"
+   ]
+  },
+  {
+   "id": "gdm",
+   "name": "Google DeepMind",
+   "region": "US",
+   "domain": "both",
+   "people": [
+    {
+     "name": "Koray Kavukcuoglu",
+     "role": "SVP, Gemini",
+     "x": "koraykv"
+    },
+    {
+     "name": "Demis Hassabis",
+     "role": "董事长",
+     "x": "demishassabis"
+    },
+    {
+     "name": "Jeff Dean",
+     "role": "Discovery Loop",
+     "x": "JeffDean"
+    }
+   ],
+   "blog": [
+    "https://deepmind.google/blog/rss.xml"
+   ],
+   "youtube": [
+    "googledeepmind"
+   ],
+   "x": [
+    "GoogleDeepMind"
+   ]
+  },
+  {
+   "id": "meta",
+   "name": "Meta MSL / FAIR",
+   "region": "US",
+   "domain": "digital",
+   "people": [
+    {
+     "name": "Alexandr Wang",
+     "role": "首席 AI 官",
+     "x": "alexandr_wang"
+    },
+    {
+     "name": "Yann LeCun",
+     "role": "AMI Labs",
+     "x": "ylecun"
+    }
+   ],
+   "blog": [
+    "https://engineering.fb.com/category/ml-applications/feed/"
+   ],
+   "youtube": [
+    "AIatMeta"
+   ],
+   "x": [
+    "AIatMeta"
+   ]
+  },
+  {
+   "id": "xai",
+   "name": "SpaceXAI (xAI)",
+   "region": "US",
+   "domain": "digital",
+   "people": [
+    {
+     "name": "Elon Musk",
+     "role": "创始人",
+     "x": "elonmusk"
+    }
+   ],
+   "blog": [],
+   "youtube": [
+    "xai"
+   ],
+   "x": [
+    "xai"
+   ]
+  },
+  {
+   "id": "msai",
+   "name": "Microsoft AI",
+   "region": "US",
+   "domain": "digital",
+   "people": [
+    {
+     "name": "Mustafa Suleyman",
+     "role": "MAI 负责人",
+     "x": "mustafasuleyman"
+    }
+   ],
+   "blog": [
+    "https://blogs.microsoft.com/ai/feed/"
+   ],
+   "youtube": [
+    "MicrosoftAI"
+   ],
+   "x": [
+    "MicrosoftAI"
+   ]
+  },
+  {
+   "id": "amazon",
+   "name": "Amazon AGI / Nova",
+   "region": "US",
+   "domain": "digital",
+   "people": [
+    {
+     "name": "Pieter Abbeel",
+     "role": "前沿模型研究",
+     "x": "pabbeel"
+    }
+   ],
+   "blog": [
+    "https://www.amazon.science/index.rss"
+   ],
+   "youtube": [
+    "AmazonScience"
+   ],
+   "x": [
+    "AmazonScience"
+   ]
+  },
+  {
+   "id": "apple",
+   "name": "Apple ML",
+   "region": "US",
+   "domain": "digital",
+   "people": [],
+   "blog": [
+    "https://machinelearning.apple.com/rss.xml"
+   ],
+   "youtube": [],
+   "x": []
+  },
+  {
+   "id": "nvidia",
+   "name": "NVIDIA",
+   "region": "US",
+   "domain": "both",
+   "people": [
+    {
+     "name": "Jim Fan",
+     "role": "GEAR / GR00T",
+     "x": "DrJimFan"
+    },
+    {
+     "name": "Yuke Zhu",
+     "role": "GEAR",
+     "x": "yukez"
+    }
+   ],
+   "blog": [
+    "https://blogs.nvidia.com/feed/"
+   ],
+   "youtube": [
+    "NVIDIA"
+   ],
+   "x": [
+    "NVIDIARobotics"
+   ]
+  },
+  {
+   "id": "tml",
+   "name": "Thinking Machines",
+   "region": "US",
+   "domain": "digital",
+   "people": [
+    {
+     "name": "Mira Murati",
+     "role": "CEO",
+     "x": "miramurati"
+    }
+   ],
+   "blog": [
+    "https://thinkingmachines.ai/blog/index.xml"
+   ],
+   "youtube": [],
+   "x": [
+    "thinkymachines"
+   ]
+  },
+  {
+   "id": "ssi",
+   "name": "SSI",
+   "region": "US",
+   "domain": "digital",
+   "people": [
+    {
+     "name": "Ilya Sutskever",
+     "role": "CEO",
+     "x": "ilyasut"
+    }
+   ],
+   "blog": [],
+   "youtube": [],
+   "x": []
+  },
+  {
+   "id": "tesla",
+   "name": "Tesla Optimus / FSD",
+   "region": "US",
+   "domain": "physical",
+   "people": [
+    {
+     "name": "Ashok Elluswamy",
+     "role": "AI 软件 VP",
+     "x": "aelluswamy"
+    }
+   ],
+   "blog": [],
+   "youtube": [
+    "tesla"
+   ],
+   "x": [
+    "Tesla_Optimus",
+    "Tesla_AI"
+   ]
+  },
+  {
+   "id": "bd",
+   "name": "Boston Dynamics",
+   "region": "US",
+   "domain": "physical",
+   "people": [
+    {
+     "name": "Rohit Prasad",
+     "role": "CEO (10/7 起)",
+     "x": ""
+    }
+   ],
+   "blog": [
+    "https://bostondynamics.com/feed/"
+   ],
+   "youtube": [
+    "BostonDynamics"
+   ],
+   "x": [
+    "BostonDynamics"
+   ]
+  },
+  {
+   "id": "figure",
+   "name": "Figure",
+   "region": "US",
+   "domain": "physical",
+   "people": [
+    {
+     "name": "Brett Adcock",
+     "role": "CEO",
+     "x": "adcock_brian"
+    }
+   ],
+   "blog": [
+    "https://www.figure.ai/news/rss.xml"
+   ],
+   "youtube": [
+    "figureai"
+   ],
+   "x": [
+    "Figure_robot"
+   ]
+  },
+  {
+   "id": "pi",
+   "name": "Physical Intelligence",
+   "region": "US",
+   "domain": "physical",
+   "people": [
+    {
+     "name": "Karol Hausman",
+     "role": "CEO",
+     "x": "hausman_k"
+    },
+    {
+     "name": "Sergey Levine",
+     "role": "联创",
+     "x": "svlevine"
+    },
+    {
+     "name": "Chelsea Finn",
+     "role": "联创",
+     "x": "chelseabfinn"
+    }
+   ],
+   "blog": [],
+   "youtube": [],
+   "x": [
+    "physical_int"
+   ]
+  },
+  {
+   "id": "skild",
+   "name": "Skild AI",
+   "region": "US",
+   "domain": "physical",
+   "people": [
+    {
+     "name": "Deepak Pathak",
+     "role": "CEO",
+     "x": "pathak2206"
+    }
+   ],
+   "blog": [],
+   "youtube": [
+    "SkildAI"
+   ],
+   "x": [
+    "SkildAI"
+   ]
+  },
+  {
+   "id": "waymo",
+   "name": "Waymo",
+   "region": "US",
+   "domain": "physical",
+   "people": [],
+   "blog": [
+    "https://waymo.com/blog/rss.xml"
+   ],
+   "youtube": [
+    "Waymo"
+   ],
+   "x": [
+    "Waymo"
+   ]
+  },
+  {
+   "id": "worldlabs",
+   "name": "World Labs",
+   "region": "US",
+   "domain": "physical",
+   "people": [
+    {
+     "name": "李飞飞",
+     "role": "创始人",
+     "x": "drfeifei"
+    }
+   ],
+   "blog": [],
+   "youtube": [],
+   "x": [
+    "theworldlabs"
+   ]
+  },
+  {
+   "id": "hf",
+   "name": "Hugging Face / LeRobot",
+   "region": "US",
+   "domain": "both",
+   "people": [],
+   "blog": [
+    "https://huggingface.co/blog/feed.xml"
+   ],
+   "youtube": [
+    "HuggingFace"
+   ],
+   "x": [
+    "huggingface"
+   ]
+  },
+  {
+   "id": "deepseek",
+   "name": "DeepSeek",
+   "region": "CN",
+   "domain": "digital",
+   "people": [],
+   "blog": [
+    "https://api-docs.deepseek.com/news/rss.xml"
+   ],
+   "youtube": [],
+   "x": [
+    "deepseek_ai"
+   ]
+  },
+  {
+   "id": "qwen",
+   "name": "阿里 Qwen",
+   "region": "CN",
+   "domain": "digital",
+   "people": [
+    {
+     "name": "刘大一恒",
+     "role": "Qwen 负责人",
+     "x": ""
+    }
+   ],
+   "blog": [
+    "https://qwenlm.github.io/blog/index.xml"
+   ],
+   "youtube": [],
+   "x": [
+    "Alibaba_Qwen"
+   ]
+  },
+  {
+   "id": "bytedance",
+   "name": "字节 Seed",
+   "region": "CN",
+   "domain": "both",
+   "people": [],
+   "blog": [
+    "https://seed.bytedance.com/en/blog/rss.xml"
+   ],
+   "youtube": [],
+   "x": [
+    "ByteDance_Seed"
+   ]
+  },
+  {
+   "id": "tencent",
+   "name": "腾讯混元",
+   "region": "CN",
+   "domain": "digital",
+   "people": [
+    {
+     "name": "姚顺雨",
+     "role": "首席 AI 科学家",
+     "x": "ShunyuYao12"
+    }
+   ],
+   "blog": [],
+   "youtube": [],
+   "x": [
+    "TencentHunyuan"
+   ]
+  },
+  {
+   "id": "moonshot",
+   "name": "月之暗面 Kimi",
+   "region": "CN",
+   "domain": "digital",
+   "people": [],
+   "blog": [],
+   "youtube": [],
+   "x": [
+    "Kimi_Moonshot"
+   ]
+  },
+  {
+   "id": "zhipu",
+   "name": "智谱 Z.ai",
+   "region": "CN",
+   "domain": "digital",
+   "people": [],
+   "blog": [],
+   "youtube": [],
+   "x": [
+    "Zai_org"
+   ]
+  },
+  {
+   "id": "minimax",
+   "name": "MiniMax",
+   "region": "CN",
+   "domain": "digital",
+   "people": [],
+   "blog": [],
+   "youtube": [],
+   "x": [
+    "MiniMax__AI"
+   ]
+  },
+  {
+   "id": "xiaomi",
+   "name": "小米 MiMo",
+   "region": "CN",
+   "domain": "digital",
+   "people": [
+    {
+     "name": "罗福莉",
+     "role": "MiMo",
+     "x": "_LuoFuli"
+    }
+   ],
+   "blog": [],
+   "youtube": [],
+   "x": []
+  },
+  {
+   "id": "unitree",
+   "name": "宇树 Unitree",
+   "region": "CN",
+   "domain": "physical",
+   "people": [],
+   "blog": [],
+   "youtube": [
+    "UnitreeRobotics"
+   ],
+   "x": [
+    "UnitreeRobotics"
+   ]
+  },
+  {
+   "id": "agibot",
+   "name": "智元 AgiBot",
+   "region": "CN",
+   "domain": "physical",
+   "people": [],
+   "blog": [],
+   "youtube": [
+    "AgiBot"
+   ],
+   "x": [
+    "AgiBot_Official"
+   ]
+  },
+  {
+   "id": "ubtech",
+   "name": "优必选 UBTech",
+   "region": "CN",
+   "domain": "physical",
+   "people": [],
+   "blog": [],
+   "youtube": [
+    "UBTECHRobotics"
+   ],
+   "x": [
+    "UBTech_Robotics"
+   ]
+  },
+  {
+   "id": "xpeng",
+   "name": "小鹏 XPeng",
+   "region": "CN",
+   "domain": "physical",
+   "people": [],
+   "blog": [],
+   "youtube": [
+    "XPENGMotors"
+   ],
+   "x": [
+    "XPengMotors"
+   ]
+  },
+  {
+   "id": "sakana",
+   "name": "Sakana AI",
+   "region": "JP",
+   "domain": "digital",
+   "people": [
+    {
+     "name": "David Ha",
+     "role": "CEO",
+     "x": "hardmaru"
+    },
+    {
+     "name": "Llion Jones",
+     "role": "CTO",
+     "x": "YesThisIsLion"
+    }
+   ],
+   "blog": [
+    "https://sakana.ai/feed.xml"
+   ],
+   "youtube": [],
+   "x": [
+    "SakanaAILabs"
+   ]
+  },
+  {
+   "id": "pfn",
+   "name": "Preferred Networks",
+   "region": "JP",
+   "domain": "both",
+   "people": [
+    {
+     "name": "岡野原大輔",
+     "role": "CEO",
+     "x": "hillbig"
+    }
+   ],
+   "blog": [
+    "https://tech.preferred.jp/ja/feed/"
+   ],
+   "youtube": [],
+   "x": [
+    "PreferredNetJP"
+   ]
+  },
+  {
+   "id": "sbi",
+   "name": "SB Intuitions",
+   "region": "JP",
+   "domain": "digital",
+   "people": [],
+   "blog": [],
+   "youtube": [],
+   "x": [
+    "SB_Intuitions"
+   ]
+  },
+  {
+   "id": "tri",
+   "name": "Toyota Research Institute",
+   "region": "JP",
+   "domain": "physical",
+   "people": [
+    {
+     "name": "Gill Pratt",
+     "role": "CEO",
+     "x": ""
+    }
+   ],
+   "blog": [
+    "https://medium.com/feed/toyotaresearch"
+   ],
+   "youtube": [
+    "ToyotaResearchInstitute"
+   ],
+   "x": [
+    "ToyotaResearch"
+   ]
+  },
+  {
+   "id": "tieriv",
+   "name": "TIER IV",
+   "region": "JP",
+   "domain": "physical",
+   "people": [
+    {
+     "name": "加藤真平",
+     "role": "CEO",
+     "x": "shinpei_kato"
+    }
+   ],
+   "blog": [],
+   "youtube": [
+    "TIERIV"
+   ],
+   "x": [
+    "tier4_official"
+   ]
+  }
+ ],
+ "sources": [
+  {
+   "key": "blog:https://openai.com/news/rss.xml",
+   "entity": "openai",
+   "kind": "blog",
+   "target": "https://openai.com/news/rss.xml",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "youtube:openai",
+   "entity": "openai",
+   "kind": "youtube",
+   "target": "OpenAI",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "x:openai",
+   "entity": "openai",
+   "kind": "x",
+   "target": "OpenAI",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:sama",
+   "entity": "openai",
+   "kind": "x",
+   "target": "sama",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:gdb",
+   "entity": "openai",
+   "kind": "x",
+   "target": "gdb",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:markchen90",
+   "entity": "openai",
+   "kind": "x",
+   "target": "markchen90",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "blog:https://raw.githubusercontent.com/olshansk/rss-feeds/main/feeds/feed_anthropic_news.xml",
+   "entity": "anthropic",
+   "kind": "blog",
+   "target": "https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_anthropic_news.xml",
+   "ok": true,
+   "count": 10,
+   "error": ""
+  },
+  {
+   "key": "youtube:anthropic-ai",
+   "entity": "anthropic",
+   "kind": "youtube",
+   "target": "anthropic-ai",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "x:anthropicai",
+   "entity": "anthropic",
+   "kind": "x",
+   "target": "AnthropicAI",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:darioamodei",
+   "entity": "anthropic",
+   "kind": "x",
+   "target": "DarioAmodei",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:bcherny",
+   "entity": "anthropic",
+   "kind": "x",
+   "target": "bcherny",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "blog:https://deepmind.google/blog/rss.xml",
+   "entity": "gdm",
+   "kind": "blog",
+   "target": "https://deepmind.google/blog/rss.xml",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "youtube:googledeepmind",
+   "entity": "gdm",
+   "kind": "youtube",
+   "target": "googledeepmind",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "x:googledeepmind",
+   "entity": "gdm",
+   "kind": "x",
+   "target": "GoogleDeepMind",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:koraykv",
+   "entity": "gdm",
+   "kind": "x",
+   "target": "koraykv",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:demishassabis",
+   "entity": "gdm",
+   "kind": "x",
+   "target": "demishassabis",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:jeffdean",
+   "entity": "gdm",
+   "kind": "x",
+   "target": "JeffDean",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "blog:https://engineering.fb.com/category/ml-applications/feed/",
+   "entity": "meta",
+   "kind": "blog",
+   "target": "https://engineering.fb.com/category/ml-applications/feed/",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "youtube:aiatmeta",
+   "entity": "meta",
+   "kind": "youtube",
+   "target": "AIatMeta",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "x:aiatmeta",
+   "entity": "meta",
+   "kind": "x",
+   "target": "AIatMeta",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:alexandr_wang",
+   "entity": "meta",
+   "kind": "x",
+   "target": "alexandr_wang",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:ylecun",
+   "entity": "meta",
+   "kind": "x",
+   "target": "ylecun",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "youtube:xai",
+   "entity": "xai",
+   "kind": "youtube",
+   "target": "xai",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "x:xai",
+   "entity": "xai",
+   "kind": "x",
+   "target": "xai",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:elonmusk",
+   "entity": "xai",
+   "kind": "x",
+   "target": "elonmusk",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "blog:https://blogs.microsoft.com/ai/feed/",
+   "entity": "msai",
+   "kind": "blog",
+   "target": "https://blogs.microsoft.com/ai/feed/",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "youtube:microsoftai",
+   "entity": "msai",
+   "kind": "youtube",
+   "target": "MicrosoftAI",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "x:microsoftai",
+   "entity": "msai",
+   "kind": "x",
+   "target": "MicrosoftAI",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:mustafasuleyman",
+   "entity": "msai",
+   "kind": "x",
+   "target": "mustafasuleyman",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "blog:https://www.amazon.science/index.rss",
+   "entity": "amazon",
+   "kind": "blog",
+   "target": "https://www.amazon.science/index.rss",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "youtube:amazonscience",
+   "entity": "amazon",
+   "kind": "youtube",
+   "target": "AmazonScience",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "x:amazonscience",
+   "entity": "amazon",
+   "kind": "x",
+   "target": "AmazonScience",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:pabbeel",
+   "entity": "amazon",
+   "kind": "x",
+   "target": "pabbeel",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "blog:https://machinelearning.apple.com/rss.xml",
+   "entity": "apple",
+   "kind": "blog",
+   "target": "https://machinelearning.apple.com/rss.xml",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "blog:https://blogs.nvidia.com/feed/",
+   "entity": "nvidia",
+   "kind": "blog",
+   "target": "https://blogs.nvidia.com/feed/",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "youtube:nvidia",
+   "entity": "nvidia",
+   "kind": "youtube",
+   "target": "NVIDIA",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "x:nvidiarobotics",
+   "entity": "nvidia",
+   "kind": "x",
+   "target": "NVIDIARobotics",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:drjimfan",
+   "entity": "nvidia",
+   "kind": "x",
+   "target": "DrJimFan",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:yukez",
+   "entity": "nvidia",
+   "kind": "x",
+   "target": "yukez",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "blog:https://thinkingmachines.ai/blog/index.xml",
+   "entity": "tml",
+   "kind": "blog",
+   "target": "https://thinkingmachines.ai/blog/index.xml",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "x:thinkymachines",
+   "entity": "tml",
+   "kind": "x",
+   "target": "thinkymachines",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:miramurati",
+   "entity": "tml",
+   "kind": "x",
+   "target": "miramurati",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:ilyasut",
+   "entity": "ssi",
+   "kind": "x",
+   "target": "ilyasut",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "youtube:tesla",
+   "entity": "tesla",
+   "kind": "youtube",
+   "target": "tesla",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "x:tesla_optimus",
+   "entity": "tesla",
+   "kind": "x",
+   "target": "Tesla_Optimus",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:tesla_ai",
+   "entity": "tesla",
+   "kind": "x",
+   "target": "Tesla_AI",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:aelluswamy",
+   "entity": "tesla",
+   "kind": "x",
+   "target": "aelluswamy",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "blog:https://bostondynamics.com/feed/",
+   "entity": "bd",
+   "kind": "blog",
+   "target": "https://bostondynamics.com/feed/",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "youtube:bostondynamics",
+   "entity": "bd",
+   "kind": "youtube",
+   "target": "BostonDynamics",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "x:bostondynamics",
+   "entity": "bd",
+   "kind": "x",
+   "target": "BostonDynamics",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "blog:https://www.figure.ai/news/rss.xml",
+   "entity": "figure",
+   "kind": "blog",
+   "target": "https://www.figure.ai/news/rss.xml",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "youtube:figureai",
+   "entity": "figure",
+   "kind": "youtube",
+   "target": "figureai",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "x:figure_robot",
+   "entity": "figure",
+   "kind": "x",
+   "target": "Figure_robot",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:adcock_brian",
+   "entity": "figure",
+   "kind": "x",
+   "target": "adcock_brian",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:physical_int",
+   "entity": "pi",
+   "kind": "x",
+   "target": "physical_int",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:hausman_k",
+   "entity": "pi",
+   "kind": "x",
+   "target": "hausman_k",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:svlevine",
+   "entity": "pi",
+   "kind": "x",
+   "target": "svlevine",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:chelseabfinn",
+   "entity": "pi",
+   "kind": "x",
+   "target": "chelseabfinn",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "youtube:skildai",
+   "entity": "skild",
+   "kind": "youtube",
+   "target": "SkildAI",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "x:skildai",
+   "entity": "skild",
+   "kind": "x",
+   "target": "SkildAI",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:pathak2206",
+   "entity": "skild",
+   "kind": "x",
+   "target": "pathak2206",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "blog:https://waymo.com/blog/rss.xml",
+   "entity": "waymo",
+   "kind": "blog",
+   "target": "https://waymo.com/blog/rss.xml",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "youtube:waymo",
+   "entity": "waymo",
+   "kind": "youtube",
+   "target": "Waymo",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "x:waymo",
+   "entity": "waymo",
+   "kind": "x",
+   "target": "Waymo",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:theworldlabs",
+   "entity": "worldlabs",
+   "kind": "x",
+   "target": "theworldlabs",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:drfeifei",
+   "entity": "worldlabs",
+   "kind": "x",
+   "target": "drfeifei",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "blog:https://huggingface.co/blog/feed.xml",
+   "entity": "hf",
+   "kind": "blog",
+   "target": "https://huggingface.co/blog/feed.xml",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "youtube:huggingface",
+   "entity": "hf",
+   "kind": "youtube",
+   "target": "HuggingFace",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "x:huggingface",
+   "entity": "hf",
+   "kind": "x",
+   "target": "huggingface",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "blog:https://api-docs.deepseek.com/news/rss.xml",
+   "entity": "deepseek",
+   "kind": "blog",
+   "target": "https://api-docs.deepseek.com/news/rss.xml",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "x:deepseek_ai",
+   "entity": "deepseek",
+   "kind": "x",
+   "target": "deepseek_ai",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "blog:https://qwenlm.github.io/blog/index.xml",
+   "entity": "qwen",
+   "kind": "blog",
+   "target": "https://qwenlm.github.io/blog/index.xml",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "x:alibaba_qwen",
+   "entity": "qwen",
+   "kind": "x",
+   "target": "Alibaba_Qwen",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "blog:https://seed.bytedance.com/en/blog/rss.xml",
+   "entity": "bytedance",
+   "kind": "blog",
+   "target": "https://seed.bytedance.com/en/blog/rss.xml",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "x:bytedance_seed",
+   "entity": "bytedance",
+   "kind": "x",
+   "target": "ByteDance_Seed",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:tencenthunyuan",
+   "entity": "tencent",
+   "kind": "x",
+   "target": "TencentHunyuan",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:shunyuyao12",
+   "entity": "tencent",
+   "kind": "x",
+   "target": "ShunyuYao12",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:kimi_moonshot",
+   "entity": "moonshot",
+   "kind": "x",
+   "target": "Kimi_Moonshot",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:zai_org",
+   "entity": "zhipu",
+   "kind": "x",
+   "target": "Zai_org",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:minimax__ai",
+   "entity": "minimax",
+   "kind": "x",
+   "target": "MiniMax__AI",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:_luofuli",
+   "entity": "xiaomi",
+   "kind": "x",
+   "target": "_LuoFuli",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "youtube:unitreerobotics",
+   "entity": "unitree",
+   "kind": "youtube",
+   "target": "UnitreeRobotics",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "x:unitreerobotics",
+   "entity": "unitree",
+   "kind": "x",
+   "target": "UnitreeRobotics",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "youtube:agibot",
+   "entity": "agibot",
+   "kind": "youtube",
+   "target": "AgiBot",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "x:agibot_official",
+   "entity": "agibot",
+   "kind": "x",
+   "target": "AgiBot_Official",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "youtube:ubtechrobotics",
+   "entity": "ubtech",
+   "kind": "youtube",
+   "target": "UBTECHRobotics",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "x:ubtech_robotics",
+   "entity": "ubtech",
+   "kind": "x",
+   "target": "UBTech_Robotics",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "youtube:xpengmotors",
+   "entity": "xpeng",
+   "kind": "youtube",
+   "target": "XPENGMotors",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "x:xpengmotors",
+   "entity": "xpeng",
+   "kind": "x",
+   "target": "XPengMotors",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "blog:https://sakana.ai/feed.xml",
+   "entity": "sakana",
+   "kind": "blog",
+   "target": "https://sakana.ai/feed.xml",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "x:sakanaailabs",
+   "entity": "sakana",
+   "kind": "x",
+   "target": "SakanaAILabs",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:hardmaru",
+   "entity": "sakana",
+   "kind": "x",
+   "target": "hardmaru",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:yesthisislion",
+   "entity": "sakana",
+   "kind": "x",
+   "target": "YesThisIsLion",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "blog:https://tech.preferred.jp/ja/feed/",
+   "entity": "pfn",
+   "kind": "blog",
+   "target": "https://tech.preferred.jp/ja/feed/",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "x:preferrednetjp",
+   "entity": "pfn",
+   "kind": "x",
+   "target": "PreferredNetJP",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:hillbig",
+   "entity": "pfn",
+   "kind": "x",
+   "target": "hillbig",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:sb_intuitions",
+   "entity": "sbi",
+   "kind": "x",
+   "target": "SB_Intuitions",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "blog:https://medium.com/feed/toyotaresearch",
+   "entity": "tri",
+   "kind": "blog",
+   "target": "https://medium.com/feed/toyotaresearch",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "youtube:toyotaresearchinstitute",
+   "entity": "tri",
+   "kind": "youtube",
+   "target": "ToyotaResearchInstitute",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "x:toyotaresearch",
+   "entity": "tri",
+   "kind": "x",
+   "target": "ToyotaResearch",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "youtube:tieriv",
+   "entity": "tieriv",
+   "kind": "youtube",
+   "target": "TIERIV",
+   "ok": false,
+   "count": 0,
+   "error": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>",
+   "stale": 0
+  },
+  {
+   "key": "x:tier4_official",
+   "entity": "tieriv",
+   "kind": "x",
+   "target": "tier4_official",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  },
+  {
+   "key": "x:shinpei_kato",
+   "entity": "tieriv",
+   "kind": "x",
+   "target": "shinpei_kato",
+   "ok": false,
+   "count": 0,
+   "error": "not configured",
+   "stale": 0
+  }
+ ],
+ "items": [
+  {
+   "id": "https://www.anthropic.com/news/genesis-mission-commitment",
+   "source": "blog:https://raw.githubusercontent.com/olshansk/rss-feeds/main/feeds/feed_anthropic_news.xml",
+   "entity": "anthropic",
+   "kind": "blog",
+   "author": "Anthropic",
+   "handle": "",
+   "title": "Building on our commitment to American scientific discovery",
+   "url": "https://www.anthropic.com/news/genesis-mission-commitment",
+   "date": "2026-10-08T00:00:00+00:00",
+   "summary": "",
+   "thumb": ""
+  },
+  {
+   "id": "https://www.anthropic.com/news/anthropic-cyber-mission",
+   "source": "blog:https://raw.githubusercontent.com/olshansk/rss-feeds/main/feeds/feed_anthropic_news.xml",
+   "entity": "anthropic",
+   "kind": "blog",
+   "author": "Anthropic",
+   "handle": "",
+   "title": "Introducing the Anthropic Cyber Mission",
+   "url": "https://www.anthropic.com/news/anthropic-cyber-mission",
+   "date": "2026-10-08T00:00:00+00:00",
+   "summary": "",
+   "thumb": ""
+  },
+  {
+   "id": "https://www.anthropic.com/news/2026-usage-policy-update",
+   "source": "blog:https://raw.githubusercontent.com/olshansk/rss-feeds/main/feeds/feed_anthropic_news.xml",
+   "entity": "anthropic",
+   "kind": "blog",
+   "author": "Anthropic",
+   "handle": "",
+   "title": "2026 Usage Policy update",
+   "url": "https://www.anthropic.com/news/2026-usage-policy-update",
+   "date": "2026-10-08T00:00:00+00:00",
+   "summary": "",
+   "thumb": ""
+  },
+  {
+   "id": "https://www.anthropic.com/news/cyber-verification-program",
+   "source": "blog:https://raw.githubusercontent.com/olshansk/rss-feeds/main/feeds/feed_anthropic_news.xml",
+   "entity": "anthropic",
+   "kind": "blog",
+   "author": "Anthropic",
+   "handle": "",
+   "title": "Expanding the Cyber Verification Program",
+   "url": "https://www.anthropic.com/news/cyber-verification-program",
+   "date": "2026-10-06T00:00:00+00:00",
+   "summary": "",
+   "thumb": ""
+  },
+  {
+   "id": "https://www.anthropic.com/news/claude-frontier-academy",
+   "source": "blog:https://raw.githubusercontent.com/olshansk/rss-feeds/main/feeds/feed_anthropic_news.xml",
+   "entity": "anthropic",
+   "kind": "blog",
+   "author": "Anthropic",
+   "handle": "",
+   "title": "Anthropic invests $100 million to train 10,000 engineers and tackle the enterprise AI talent gap",
+   "url": "https://www.anthropic.com/news/claude-frontier-academy",
+   "date": "2026-10-02T00:00:00+00:00",
+   "summary": "",
+   "thumb": ""
+  },
+  {
+   "id": "https://www.anthropic.com/news/barclays-scales-claude",
+   "source": "blog:https://raw.githubusercontent.com/olshansk/rss-feeds/main/feeds/feed_anthropic_news.xml",
+   "entity": "anthropic",
+   "kind": "blog",
+   "author": "Anthropic",
+   "handle": "",
+   "title": "Barclays scales Claude to upgrade operations and improve client experience",
+   "url": "https://www.anthropic.com/news/barclays-scales-claude",
+   "date": "2026-10-01T00:00:00+00:00",
+   "summary": "",
+   "thumb": ""
+  },
+  {
+   "id": "https://www.anthropic.com/news/claude-discovers-novel-enzyme-system",
+   "source": "blog:https://raw.githubusercontent.com/olshansk/rss-feeds/main/feeds/feed_anthropic_news.xml",
+   "entity": "anthropic",
+   "kind": "blog",
+   "author": "Anthropic",
+   "handle": "",
+   "title": "Claude discovers a novel enzyme system with CRISPR-like repeats",
+   "url": "https://www.anthropic.com/news/claude-discovers-novel-enzyme-system",
+   "date": "2026-09-23T00:00:00+00:00",
+   "summary": "",
+   "thumb": ""
+  },
+  {
+   "id": "https://www.anthropic.com/news/accenture-embedded-evaluation",
+   "source": "blog:https://raw.githubusercontent.com/olshansk/rss-feeds/main/feeds/feed_anthropic_news.xml",
+   "entity": "anthropic",
+   "kind": "blog",
+   "author": "Anthropic",
+   "handle": "",
+   "title": "Partnering with Accenture on embedded evaluation",
+   "url": "https://www.anthropic.com/news/accenture-embedded-evaluation",
+   "date": "2026-09-18T00:00:00+00:00",
+   "summary": "",
+   "thumb": ""
+  },
+  {
+   "id": "https://www.anthropic.com/news/life-sciences-verification-program",
+   "source": "blog:https://raw.githubusercontent.com/olshansk/rss-feeds/main/feeds/feed_anthropic_news.xml",
+   "entity": "anthropic",
+   "kind": "blog",
+   "author": "Anthropic",
+   "handle": "",
+   "title": "Introducing the Life Sciences Verification Program",
+   "url": "https://www.anthropic.com/news/life-sciences-verification-program",
+   "date": "2026-09-17T00:00:00+00:00",
+   "summary": "",
+   "thumb": ""
+  },
+  {
+   "id": "https://www.anthropic.com/news/enterprise-frontier-safeguards",
+   "source": "blog:https://raw.githubusercontent.com/olshansk/rss-feeds/main/feeds/feed_anthropic_news.xml",
+   "entity": "anthropic",
+   "kind": "blog",
+   "author": "Anthropic",
+   "handle": "",
+   "title": "Developing Enterprise Frontier Safeguards with our customers",
+   "url": "https://www.anthropic.com/news/enterprise-frontier-safeguards",
+   "date": "2026-09-01T00:00:00+00:00",
+   "summary": "",
+   "thumb": ""
+  }
+ ]
+}
