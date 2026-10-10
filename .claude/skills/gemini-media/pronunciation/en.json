@@ -1,0 +1,5 @@
+{
+  "_comment": "term -> spoken form, applied before TTS only (subtitles keep the original). ASCII terms match whole words only.",
+  "SaaS": "sass",
+  "SQL": "sequel"
+}

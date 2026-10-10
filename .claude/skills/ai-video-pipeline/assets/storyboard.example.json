@@ -1,0 +1,36 @@
+{
+  "id": "demo",
+  "title": "SDV 開発をもっと速く",
+  "lang": "ja",
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "style": "isometric-tech",
+  "voice": "Kore",
+  "voiceStyle": "落ち着いた、信頼感のあるトーンで、ややゆっくり読み上げてください",
+  "headPadSec": 0.4,
+  "tailPadSec": 0.6,
+  "bgm": null,
+  "bgmVolume": 0.12,
+  "scenes": [
+    {
+      "id": "s01",
+      "title": "クルマはソフトウェアで進化する",
+      "narration": "クルマの価値は、いまソフトウェアで決まる時代になりました。",
+      "imagePrompt": "A modern electric car floating above a glowing circuit-board city, data streams flowing into the car, wide shot, car centered, empty sky in the upper third",
+      "minSec": 4
+    },
+    {
+      "id": "s02",
+      "title": "課題：検証に時間がかかる",
+      "narration": "しかし、ECUの数が増えるほど、統合と検証には膨大な時間がかかります。",
+      "imagePrompt": "Engineers surrounded by a tangled web of connected electronic control units on a large workbench, slightly overwhelmed mood, medium shot"
+    },
+    {
+      "id": "s03",
+      "title": "仮想環境で、早く・何度でも",
+      "narration": "仮想ECUとクラウド上のテスト環境を使えば、実車がなくても、何度でも素早く検証できます。",
+      "imagePrompt": "A virtual car made of translucent blue wireframe inside a cloud-shaped server room, automated test checkmarks orbiting around it, wide shot"
+    }
+  ]
+}

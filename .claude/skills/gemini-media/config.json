@@ -1,0 +1,16 @@
+{
+  "_comment": "Model names change often. Verify with `python3 scripts/list_models.py image tts` and update here, or override per run with --model / env GEMINI_IMAGE_MODEL / GEMINI_TTS_MODEL.",
+  "api_key_env": ["GEMINI_API_KEY", "GOOGLE_API_KEY"],
+  "api_base": "https://generativelanguage.googleapis.com/v1beta",
+  "image_model": "gemini-2.5-flash-image",
+  "image_model_hq": "gemini-3-pro-image-preview",
+  "tts_model": "gemini-2.5-flash-preview-tts",
+  "tts_model_hq": "gemini-2.5-pro-preview-tts",
+  "default_voice": {
+    "zh": "Kore",
+    "ja": "Kore",
+    "en": "Charon"
+  },
+  "timeout_sec": 180,
+  "max_retries": 3
+}

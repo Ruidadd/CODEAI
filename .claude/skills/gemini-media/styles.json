@@ -1,0 +1,39 @@
+{
+  "_comment": "Style presets keep every image in one video visually consistent. prefix + scene prompt + suffix is sent to the model. Add your own brand preset here (colors as hex). Keep 'no text' in suffix: on-screen text is rendered by Remotion, not by the image model.",
+  "corporate-flat": {
+    "description": "扁平商务插画 / フラットなビジネスイラスト — company intros, product explainers",
+    "prefix": "Clean flat vector illustration in a modern corporate tech style.",
+    "suffix": "Limited palette of deep navy (#1B2A4A), teal (#14B8A6), soft gray (#E5E7EB) and white. Soft shadows, generous negative space, balanced composition, consistent line weight. No text, no letters, no logos, no watermark.",
+    "aspect": "16:9"
+  },
+  "isometric-tech": {
+    "description": "等距 3D 科技插画 / アイソメトリック3D — software, automotive, systems diagrams",
+    "prefix": "Isometric 3D illustration, clean low-poly tech aesthetic, soft studio lighting.",
+    "suffix": "Cool blue and cyan palette with a single warm orange accent, smooth gradients, subtle ambient occlusion, plain light background. No text, no letters, no logos, no watermark.",
+    "aspect": "16:9"
+  },
+  "photo-real": {
+    "description": "写实照片风 / 実写風 — recruitment, office life, customer stories",
+    "prefix": "Photorealistic editorial photograph.",
+    "suffix": "Natural soft daylight, 35mm lens, shallow depth of field, realistic skin and materials, calm professional mood, East Asian office setting when people appear. No text, no signage with letters, no watermark.",
+    "aspect": "16:9"
+  },
+  "anime-soft": {
+    "description": "柔和日系动画风 / やわらかいアニメ調 — social media shorts, onboarding stories",
+    "prefix": "Soft Japanese anime illustration with gentle watercolor shading.",
+    "suffix": "Warm pastel palette, clean line art, expressive but simple characters, light airy background. No text, no speech bubbles, no watermark.",
+    "aspect": "16:9"
+  },
+  "whiteboard": {
+    "description": "白板手绘 / ホワイトボード手書き — training material, how-it-works explainers",
+    "prefix": "Hand-drawn whiteboard sketch illustration, black marker lines on a clean white board.",
+    "suffix": "Simple doodle shapes, one or two accent colors (blue #2563EB, red #DC2626), lots of white space. No written words, no letters, no watermark.",
+    "aspect": "16:9"
+  },
+  "vertical-short": {
+    "description": "竖屏短视频 / 縦型ショート — TikTok, Reels, YouTube Shorts",
+    "prefix": "Bold, high-contrast vertical illustration designed for a phone screen.",
+    "suffix": "Vivid saturated colors, single clear focal subject in the upper two thirds, simple background, leave the bottom 25% calm for captions. No text, no letters, no watermark.",
+    "aspect": "9:16"
+  }
+}
